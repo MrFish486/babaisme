@@ -3,7 +3,7 @@ class player{
 	constructor(pos, controls){
 		this.pos = pos;
 		this.controls = controls;
-		this.pressed = {};
+		/*this.pressed = {};
 		Object.keys(this.controls).forEach((v, i)=>{
 			document.addEventListener('keydown', (e)=>{
 				if(e.code == v){
@@ -17,20 +17,22 @@ class player{
 					this.pressed[controls[v]] = false;
 				}
 			})
-		})
+		})*/ // We don't need to keep reading pressed keys
+		document.addEventListener('keydown', (e)=>{this.parent_.tick(e)}); // Because this.parent_ isn't defined yet.
 	}
 }
 class game{
 	constructor(stages, stagenum, player, colorprofile){
 		// Note: babaisyou only ticks on player movement.
 		this.stages = stages;
+		this.player = player;
+		this.player.parent_ = this;
 		this.stagenum = stagenum;
 		this.stage = stages[stagenum];
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
 		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text"];
 		this.__assignto = ["text:you"];
-		this.probe();
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(this.__assignable.includes(this.stage.whatis(x, y))){
@@ -97,6 +99,17 @@ class game{
 				}
 			}
 		}
+	}
+	tick(event_){ // Again, baba only ticks on moves.
+		for(let x = 0; x < this.stage.sizeframe.x; x++){
+			for(let y = 0; y < this.stage.sizeframe.y; y++){
+				if(this.stage.whatis(x, y) == "baba"){
+					this.player.pos = new vector(x, y);
+				}
+			}
+
+		}
+		// Handle pushing and moving tommorow (goodbye March 5th 2025)
 	}
 
 }
