@@ -33,24 +33,27 @@ class game{
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
 		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text"];
 		this.__assignto = ["text:you"];
+		this.__assignable.forEach((v, i)=>{
+			this.definitions[v] = []
+		})
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(this.__assignable.includes(this.stage.whatis(x, y))){
 					if(this.stage.whatis(x - 1, y) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x - 2, y))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x - 2, y);
+							this.definitions[this.stage.whatis(x, y)].push(this.stage.whatis(x - 2, y));
 						}
 					}else if(this.stage.whatis(x + 1, y) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x + 2, y))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x + 2, y);
+							this.definitions[this.stage.whatis(x, y)].push(this.stage.whatis(x + 2, y));
 						}
 					}else if(this.stage.whatis(x, y - 1) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x, y - 2))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y - 2);
+							this.definitions[this.stage.whatis(x, y)].push(this.stage.whatis(x, y - 2));
 						}
 					}else if(this.stage.whatis(x, y + 1) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x, y + 2))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y + 2);
+							this.definitions[this.stage.whatis(x, y)].push(this.stage.whatis(x, y + 2));
 						}
 					}
 				}
@@ -64,11 +67,11 @@ class game{
 		let xscale = canvas.width / this.stage.sizeframe.x;
 		let yscale = canvas.height / this.stage.sizeframe.y;
 		if(debug){console.log(`ys=${yscale},xs=${xscale}`)};
-		for(let y = 0; y < this.stage.sizeframe.y; y++){
-			for(let x = 0; x < this.stage.sizeframe.x; x++){
+		for(let x = 0; x < this.stage.sizeframe.x; x++){
+			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(debug){console.log(`x=${x},y=${y},color=${this.colorprofile[this.stage.whatis(x, y)]},mat=${this.stage.whatis(x, y)}`)};
 				c.beginPath();
-				c.rect(x * xscale, y * yscale, xscale, yscale);
+				c.rect(y * yscale, x * xscale, yscale, xscale);
 				c.fillStyle = this.colorprofile[this.stage.whatis(x, y)];
 				c.fill();
 				c.closePath();
@@ -76,29 +79,36 @@ class game{
 		}
 	}
 	probe(){
+		this.definitions = {};
+		this.__assignable.forEach((v, i)=>{
+			this.definitions[v] = []
+		})
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(this.__assignable.includes(this.stage.whatis(x, y))){
 					if(this.stage.whatis(x - 1, y) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x - 2, y))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x - 2, y);
+							this.definitions[this.stage.whatis(x, y)].push(this.stage.whatis(x - 2, y));
 						}
 					}else if(this.stage.whatis(x + 1, y) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x + 2, y))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x + 2, y);
+							this.definitions[this.stage.whatis(x, y)].push(this.stage.whatis(x + 2, y));
 						}
 					}else if(this.stage.whatis(x, y - 1) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x, y - 2))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y - 2);
+							this.definitions[this.stage.whatis(x, y)].push(this.stage.whatis(x, y - 2));
 						}
 					}else if(this.stage.whatis(x, y + 1) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x, y + 2))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y + 2);
+							this.definitions[this.stage.whatis(x, y)].push(this.stage.whatis(x, y + 2));
 						}
 					}
 				}
 			}
 		}
+	}
+	isdef(prop, val){
+		return this.definitions[prop].includes[val];
 	}
 	tick(event_){ // Again, baba only ticks on moves.
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
