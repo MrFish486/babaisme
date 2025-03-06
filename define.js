@@ -3,16 +3,17 @@ class player{
 	constructor(pos, controls){
 		this.pos = pos;
 		this.controls = controls;
+		this.pressed = {};
 		Object.keys(this.controls).forEach((v, i)=>{
 			document.addEventListener('keydown', (e)=>{
-				if(code == v){
+				if(e.code == v){
 					this.pressed[controls[v]] = true;
 				}
 			})
 		})
 		Object.keys(this.controls).forEach((v, i)=>{
 			document.addEventListener('keyup', (e)=>{
-				if(code == v){
+				if(e.code == v){
 					this.pressed[controls[v]] = false;
 				}
 			})
@@ -20,58 +21,33 @@ class player{
 	}
 }
 class game{
-	probe(){
-		for(let x = 0; x < this.stage.w; x++){
-			for(let y = 0; y < this.stage.h; y++){
-				if(this.__asignable.includes(this.stage.whatis(x, y))){
-					if(this.stage.whatis(x - 1, y) == "is"){
-						if(this.__asignto.includes(this.stage.whatis(x - 2, y))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x - 2, y);
-						}
-					}else if(this.stage.whatis(x + 1, y) == "is"){
-						if(this.__asignto.includes(this.stage.whatis(x + 2, y))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x + 2, y);
-						}
-					}else if(this.stage.whatis(x, y - 1) == "is"){
-						if(this.__asignto.includes(this.stage.whatis(x, y - 2))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y - 2);
-						}
-					}else if(this.stage.whatis(x, y + 1) == "is"){
-						if(this.__asignto.includes(this.stage.whatis(x, y + 2))){
-							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y + 2);
-						}
-					}
-				}
-			}
-		}
-	}
 	constructor(stages, stagenum, player, colorprofile){
 		// Note: babaisyou only ticks on player movement.
 		this.stages = stages;
 		this.stagenum = stagenum;
-		this.currentstage = stages[stagenum];
+		this.stage = stages[stagenum];
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
 		this.__assignable = ["baba", "wall", "flag", "text"];
 		this.__assignto = ["you"];
 		this.probe();
-		for(let x = 0; x < this.stage.sizeframe.w; x++){
-			for(let y = 0; y < this.stage.sizeframe.h; y++){
-				if(this.__asignable.includes(this.stage.whatis(x, y))){
-					if(this.stage.whatis(x - 1, y) == "is"){
-						if(this.__asignto.includes(this.stage.whatis(x - 2, y))){
+		for(let x = 0; x < this.stage.sizeframe.x; x++){
+			for(let y = 0; y < this.stage.sizeframe.y; y++){
+				if(this.__assignable.includes(this.stage.whatis(x, y))){
+					if(this.stage.whatis(x - 1, y) == "text:is"){
+						if(this.__assignto.includes(this.stage.whatis(x - 2, y))){
 							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x - 2, y);
 						}
-					}else if(this.stage.whatis(x + 1, y) == "is"){
-						if(this.__asignto.includes(this.stage.whatis(x + 2, y))){
+					}else if(this.stage.whatis(x + 1, y) == "text:is"){
+						if(this.__assignto.includes(this.stage.whatis(x + 2, y))){
 							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x + 2, y);
 						}
-					}else if(this.stage.whatis(x, y - 1) == "is"){
-						if(this.__asignto.includes(this.stage.whatis(x, y - 2))){
+					}else if(this.stage.whatis(x, y - 1) == "text:is"){
+						if(this.__assignto.includes(this.stage.whatis(x, y - 2))){
 							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y - 2);
 						}
-					}else if(this.stage.whatis(x, y + 1) == "is"){
-						if(this.__asignto.includes(this.stage.whatis(x, y + 2))){
+					}else if(this.stage.whatis(x, y + 1) == "text:is"){
+						if(this.__assignto.includes(this.stage.whatis(x, y + 2))){
 							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y + 2);
 						}
 					}
@@ -93,6 +69,32 @@ class game{
 			}
 		}
 	}
+	probe(){
+		for(let x = 0; x < this.stage.sizeframe.x; x++){
+			for(let y = 0; y < this.stage.sizeframe.y; y++){
+				if(this.__assignable.includes(this.stage.whatis(x, y))){
+					if(this.stage.whatis(x - 1, y) == "is"){
+						if(this.__assignto.includes(this.stage.whatis(x - 2, y))){
+							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x - 2, y);
+						}
+					}else if(this.stage.whatis(x + 1, y) == "is"){
+						if(this.__assignto.includes(this.stage.whatis(x + 2, y))){
+							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x + 2, y);
+						}
+					}else if(this.stage.whatis(x, y - 1) == "is"){
+						if(this.__assignto.includes(this.stage.whatis(x, y - 2))){
+							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y - 2);
+						}
+					}else if(this.stage.whatis(x, y + 1) == "is"){
+						if(this.__assignto.includes(this.stage.whatis(x, y + 2))){
+							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y + 2);
+						}
+					}
+				}
+			}
+		}
+	}
+
 }
 class stage{
 	constructor(map, materials){
