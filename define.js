@@ -28,8 +28,8 @@ class game{
 		this.stage = stages[stagenum];
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
-		this.__assignable = ["baba", "wall", "flag", "text"];
-		this.__assignto = ["you"];
+		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text"];
+		this.__assignto = ["text:you"];
 		this.probe();
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
@@ -55,17 +55,21 @@ class game{
 			}
 		}
 	}
-	render(canvas){
+	render(canvas, debug=false){
 		let c = canvas.getContext("2d");
+		c.clearRect(0, 0, 500, 500);
 		// To render : Background, Text, Water, Wall, Flag
-		let xscale = canvas.width / this.stage.sizeframe.w;
-		let yscale = canvas.height / this.stage.sizeframe.h;
-		for(let x = 0; x < this.stage.sizeframe.w; x++){
-			for(let y = 0; y < this.stage.sizeframe.h; y++){
+		let xscale = canvas.width / this.stage.sizeframe.x;
+		let yscale = canvas.height / this.stage.sizeframe.y;
+		if(debug){console.log(`ys=${yscale},xs=${xscale}`)};
+		for(let y = 0; y < this.stage.sizeframe.y; y++){
+			for(let x = 0; x < this.stage.sizeframe.x; x++){
+				if(debug){console.log(`x=${x},y=${y},color=${this.colorprofile[this.stage.whatis(x, y)]},mat=${this.stage.whatis(x, y)}`)};
 				c.beginPath();
 				c.rect(x * xscale, y * yscale, xscale, yscale);
 				c.fillStyle = this.colorprofile[this.stage.whatis(x, y)];
 				c.fill();
+				c.closePath();
 			}
 		}
 	}
@@ -73,19 +77,19 @@ class game{
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(this.__assignable.includes(this.stage.whatis(x, y))){
-					if(this.stage.whatis(x - 1, y) == "is"){
+					if(this.stage.whatis(x - 1, y) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x - 2, y))){
 							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x - 2, y);
 						}
-					}else if(this.stage.whatis(x + 1, y) == "is"){
+					}else if(this.stage.whatis(x + 1, y) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x + 2, y))){
 							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x + 2, y);
 						}
-					}else if(this.stage.whatis(x, y - 1) == "is"){
+					}else if(this.stage.whatis(x, y - 1) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x, y - 2))){
 							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y - 2);
 						}
-					}else if(this.stage.whatis(x, y + 1) == "is"){
+					}else if(this.stage.whatis(x, y + 1) == "text:is"){
 						if(this.__assignto.includes(this.stage.whatis(x, y + 2))){
 							this.definitions[this.stage.whatis(x, y)] = this.stage.whatis(x, y + 2);
 						}

@@ -7,6 +7,7 @@ var __BUILTIN_STAGES = [
 		[0,0,0,0,0]
 		],
 		{
+			0:"background", //DO NOT FORGET!!
 			1:"text:baba",
 			2:"text:is",
 			3:"text:you",
