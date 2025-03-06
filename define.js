@@ -1,4 +1,4 @@
-var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime" };
+var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "unknown" : "blue" };
 class player{
 	constructor(pos, controls){
 		this.pos = pos;
@@ -110,8 +110,13 @@ class stage{
 	}
 	whatis(x, y){
 		try{
+			if(this.materials[this.map[x][y]] == undefined){
+				return "unknown";
+			}
 			return this.materials[this.map[x][y]];
-		}catch{}
+		}catch{
+			return "unknown"
+		}
 	}
 	cango(x, y){
 		return !this.solids.includes(this.whatis(x, y));
