@@ -142,21 +142,33 @@ class game{
 		// Handle pushing and moving tommorow (goodbye March 5th 2025)
 		if(youexists){
 			if(event_.code == "ArrowUp" && this.player.pos.x != 0){
-				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
-				this.player.under = this.stage.whatis(this.player.pos.x - 1, this.player.pos.y);
-				this.stage.set(this.player.pos.x - 1, this.player.pos.y, "baba");
+				this.stage.set(this.player.pos.x, this.player.pos.y, "background");
+				try{
+					if(this.stage.push(this.player.pos.x - 1, this.player.pos.y, "u") == 5){
+						this.stage.set(this.player.pos.x - 1, this.player.pos.y, "baba");
+					}else{throw("")}
+				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, "baba")}
 			}else if(event_.code == "ArrowDown" && this.player.pos.x != this.stage.sizeframe.x - 1){
-				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
-				this.player.under = this.stage.whatis(this.player.pos.x + 1, this.player.pos.y);
-				this.stage.set(this.player.pos.x + 1, this.player.pos.y, "baba");
+				this.stage.set(this.player.pos.x, this.player.pos.y, "background");
+				try{
+					if(this.stage.push(this.player.pos.x + 1, this.player.pos.y, "d") == 5){
+						this.stage.set(this.player.pos.x + 1, this.player.pos.y, "baba");
+					}else{throw("")}
+				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, "baba")}
 			}else if(event_.code == "ArrowLeft" && this.player.pos.y != 0){
-				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
-				this.player.under = this.stage.whatis(this.player.pos.x, this.player.pos.y - 1);
-				this.stage.set(this.player.pos.x, this.player.pos.y - 1, "baba");
+				this.stage.set(this.player.pos.x, this.player.pos.y, "background");
+				try{
+					if(this.stage.push(this.player.pos.x, this.player.pos.y - 1, "l") == 5){
+						this.stage.set(this.player.pos.x, this.player.pos.y - 1, "baba");
+					}else{throw("")}
+				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, "baba")}
 			}else if(event_.code == "ArrowRight" && this.player.pos.y != this.stage.sizeframe.y - 1){ // It's 0-indexed!
-				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
-				this.player.under = this.stage.whatis(this.player.pos.x, this.player.pos.y + 1);
-				this.stage.set(this.player.pos.x, this.player.pos.y + 1, "baba");
+				this.stage.set(this.player.pos.x, this.player.pos.y, "background");
+				try{
+					if(this.stage.push(this.player.pos.x, this.player.pos.y + 1, "r") == 5){
+						this.stage.set(this.player.pos.x, this.player.pos.y + 1, "baba");
+					}else{throw("")}
+				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, "baba")}
 			}
 		}
 	}
@@ -185,50 +197,59 @@ class stage{
 			}
 			return this.materials[this.map[x][y]];
 		}catch{
-			return "unknown"
+			return "unknown";
 		}
 	}
 	push(x, y, dir){
+		// 1: hit wall, 5: success
+		if((x == -1 && dir == "u") || (x == this.sizeframe.x && dir == "d") || (y == -1 && dir == "l") || (y == this.sizeframe.y && dir == "r")){
+			return 1;
+		}
 		if(this.pushable.includes(this.whatis(x, y))){
 			if(dir == "u" && x != 0){
 				if(this.whatis(x - 1, y) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x - 1, y, mat);
+					return 5; // 5 means pushed.
 				}else{
 					this.push(x - 1, y, "u");
-					this.push(x, y, "u");
+					return this.push(x, y, "u");
 				}
 			}else if(dir == "d" && x != this.sizeframe.x){
 				if(this.whatis(x + 1, y) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x + 1, y, mat);
+					return 5;
 				}else{
 					this.push(x + 1, y, "d");
-					this.push(x, y, "d");
+					return this.push(x, y, "d");
 				}
 			}else if(dir == "l" && y != 0){
 				if(this.whatis(x, y - 1) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x, y - 1, mat);
+					return 5;
 				}else{
 					this.push(x, y - 1, "l");
-					this.push(x, y, "l");
+					return this.push(x, y, "l");
 				}
 			}else if(dir == "r" && y != this.sizeframe.y){
 				if(this.whatis(x, y + 1) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x, y + 1, mat);
+					return 5;
 				}else{
 					this.push(x, y + 1, "r");
-					this.push(x, y, "r");
+					return this.push(x, y, "r");
 				}
 			}
+			return 1;
 		}
-		return;
+		return 5;
 	}
 	set(x, y, mat){
 		this.map[x][y] = Object.reverse(this.materials)[mat];
