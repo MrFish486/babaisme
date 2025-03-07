@@ -1,4 +1,4 @@
-var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "unknown" : "green" };
+var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "unknown" : "green" };
 Object.prototype.reverse = (obj)=>{
 	let n={};
 	for(var key in obj){
@@ -40,7 +40,7 @@ class game{
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
 		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text"];
-		this.__assignto = ["text:you"];
+		this.__assignto = ["text:you", "text:stop"];
 		this.__assignable.forEach((v, i)=>{
 			this.definitions[v] = []
 		})
@@ -68,7 +68,7 @@ class game{
 			}
 		}
 	}
-	render(canvas, debug=false){
+	render(canvas, debug = false){
 		let c = canvas.getContext("2d");
 		c.clearRect(0, 0, 500, 500);
 		// To render : Background, Text, Water, Wall, Flag
@@ -114,6 +114,7 @@ class game{
 				}
 			}
 		}
+		this.stage.solids = this.lookupprop("text:stop")
 	}
 	isdef(prop, val){
 		return this.definitions[prop].includes[val];
@@ -142,33 +143,37 @@ class game{
 		// Handle pushing and moving tommorow (goodbye March 5th 2025)
 		if(youexists){
 			if(event_.code == "ArrowUp" && this.player.pos.x != 0){
-				this.stage.set(this.player.pos.x, this.player.pos.y, "background");
+				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x - 1, this.player.pos.y, "u") == 5){
-						this.stage.set(this.player.pos.x - 1, this.player.pos.y, "baba");
+						this.player.under = this.stage.whatis(x - 1, y);
+						this.stage.set(this.player.pos.x - 1, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1]);
 					}else{throw("")}
-				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, "baba")}
+				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
 			}else if(event_.code == "ArrowDown" && this.player.pos.x != this.stage.sizeframe.x - 1){
-				this.stage.set(this.player.pos.x, this.player.pos.y, "background");
+				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x + 1, this.player.pos.y, "d") == 5){
-						this.stage.set(this.player.pos.x + 1, this.player.pos.y, "baba");
+						this.player.under = this.stage.whatis(x + 1, y);
+						this.stage.set(this.player.pos.x + 1, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1]);
 					}else{throw("")}
-				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, "baba")}
+				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
 			}else if(event_.code == "ArrowLeft" && this.player.pos.y != 0){
-				this.stage.set(this.player.pos.x, this.player.pos.y, "background");
+				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x, this.player.pos.y - 1, "l") == 5){
-						this.stage.set(this.player.pos.x, this.player.pos.y - 1, "baba");
+						this.player.under = this.stage.whatis(x, y - 1);
+						this.stage.set(this.player.pos.x, this.player.pos.y - 1, this.lookupprop("text:you")[0].split("text:")[1]);
 					}else{throw("")}
-				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, "baba")}
+				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
 			}else if(event_.code == "ArrowRight" && this.player.pos.y != this.stage.sizeframe.y - 1){ // It's 0-indexed!
-				this.stage.set(this.player.pos.x, this.player.pos.y, "background");
+				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x, this.player.pos.y + 1, "r") == 5){
-						this.stage.set(this.player.pos.x, this.player.pos.y + 1, "baba");
+						this.player.under = this.stage.whatis(x, y + 1);
+						this.stage.set(this.player.pos.x, this.player.pos.y + 1, this.lookupprop("text:you")[0].split("text:")[1]);
 					}else{throw("")}
-				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, "baba")}
+				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
 			}
 		}
 	}
@@ -185,8 +190,8 @@ class stage{
 	constructor(map, materials){
 		this.map = map;
 		this.materials = materials;
-		this.solids = ["wall"];
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall"]
+		this.solids = []
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop"]
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
 		// material ids: "water", "wall", "flag", "text:baba", "text:is", "text:you"
 	}
@@ -201,9 +206,12 @@ class stage{
 		}
 	}
 	push(x, y, dir){
-		// 1: hit wall, 5: success
-		if((x == -1 && dir == "u") || (x == this.sizeframe.x && dir == "d") || (y == -1 && dir == "l") || (y == this.sizeframe.y && dir == "r")){
+		// 1: hit wall, 2: it's solid! 5: success
+		if((x <= -1 && dir == "u") || (x >= this.sizeframe.x && dir == "d") || (y <= -1 && dir == "l") || (y >= this.sizeframe.y && dir == "r")){ // Check for wall
 			return 1;
+		}
+		if(this.solids.includes("text:"+this.whatis(x, y))){
+			return 2;
 		}
 		if(this.pushable.includes(this.whatis(x, y))){
 			if(dir == "u" && x != 0){

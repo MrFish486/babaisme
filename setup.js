@@ -13,7 +13,7 @@ setInterval(()=>{ // Set up render thread
 	baba.render(document.getElementById("main"));
 }, 100);
 
-setInterval(()=>{
+setInterval(()=>{ // Switch to current stage
 	baba.stage = baba.stages[baba.stagenum];
 })
 
