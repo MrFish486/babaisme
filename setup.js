@@ -1,4 +1,4 @@
-var you = new player(new vector(0, 0), {"ArrowUp":"up"}); // Make player
+var you = new player(new vector(0, 0), {}); // Make player
 
 var baba = new game(__BUILTIN_STAGES.concat(_USER_STAGES), 0, you, __DEFAULT_COLOR_PROFILE); // Make game
 
@@ -15,7 +15,8 @@ setInterval(()=>{ // Set up render thread
 
 setInterval(()=>{ // Switch to current stage
 	baba.stage = baba.stages[baba.stagenum];
-})
+	baba.checkwin();
+});
 
 document.onkeydown = (e)=>{ // Trap arrow keys (to stop scrolling)
 	e = e || window.event;

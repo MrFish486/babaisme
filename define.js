@@ -1,4 +1,4 @@
-var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "unknown" : "green" };
+var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green" };
 Object.prototype.reverse = (obj)=>{
 	let n={};
 	for(var key in obj){
@@ -26,7 +26,11 @@ class player{
 				}
 			})
 		})*/ // We don't need to keep reading pressed keys
-		document.addEventListener('keydown', (e)=>{this.parent_.tick(e)}); // Because this.parent_ isn't defined yet.
+		this.listen = (e)=>{this.parent_.tick(e)}
+		document.addEventListener('keydown', this.listen); // Because this.parent_ isn't defined yet.
+	}
+	removeeventlistener(){
+		document.removeEventListener('keydown', this.listen);
 	}
 }
 class game{
@@ -40,7 +44,7 @@ class game{
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
 		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text"];
-		this.__assignto = ["text:you", "text:stop"];
+		this.__assignto = ["text:you", "text:stop", "text:win"];
 		this.__assignable.forEach((v, i)=>{
 			this.definitions[v] = []
 		})
@@ -146,7 +150,7 @@ class game{
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x - 1, this.player.pos.y, "u") == 5){
-						this.player.under = this.stage.whatis(x - 1, y);
+						this.player.under = this.stage.whatis(this.player.pos.x - 1, this.player.pos.y);
 						this.stage.set(this.player.pos.x - 1, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1]);
 					}else{throw("")}
 				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
@@ -154,7 +158,7 @@ class game{
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x + 1, this.player.pos.y, "d") == 5){
-						this.player.under = this.stage.whatis(x + 1, y);
+						this.player.under = this.stage.whatis(this.player.pos.x + 1, this.player.pos.y);
 						this.stage.set(this.player.pos.x + 1, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1]);
 					}else{throw("")}
 				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
@@ -162,7 +166,7 @@ class game{
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x, this.player.pos.y - 1, "l") == 5){
-						this.player.under = this.stage.whatis(x, y - 1);
+						this.player.under = this.stage.whatis(this.player.pos.x, this.player.pos.y - 1);
 						this.stage.set(this.player.pos.x, this.player.pos.y - 1, this.lookupprop("text:you")[0].split("text:")[1]);
 					}else{throw("")}
 				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
@@ -170,7 +174,7 @@ class game{
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x, this.player.pos.y + 1, "r") == 5){
-						this.player.under = this.stage.whatis(x, y + 1);
+						this.player.under = this.stage.whatis(this.player.pos.x, this.player.pos.y + 1);
 						this.stage.set(this.player.pos.x, this.player.pos.y + 1, this.lookupprop("text:you")[0].split("text:")[1]);
 					}else{throw("")}
 				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
@@ -184,14 +188,21 @@ class game{
 			}
 		}
 	}
-
+	checkwin(){
+		if(this.lookupprop("text:win").includes("text:"+this.player.under)){
+			this.player.removeeventlistener();
+			this.player = new player(new vector(0, 0), {});
+			this.player.parent_ = this;
+			this.stagenum++;
+		}
+	}
 }
 class stage{
 	constructor(map, materials){
 		this.map = map;
 		this.materials = materials;
-		this.solids = []
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop"]
+		this.solids = [] // Definable
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win"] // Static
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
 		// material ids: "water", "wall", "flag", "text:baba", "text:is", "text:you"
 	}
