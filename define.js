@@ -145,7 +145,7 @@ class game{
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				this.player.under = this.stage.whatis(this.player.pos.x - 1, this.player.pos.y);
 				this.stage.set(this.player.pos.x - 1, this.player.pos.y, "baba");
-			}else if(event_.code == "ArrowDown" && this.player.pos.x != this.stage.sizeframe.x){
+			}else if(event_.code == "ArrowDown" && this.player.pos.x != this.stage.sizeframe.x - 1){
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				this.player.under = this.stage.whatis(this.player.pos.x + 1, this.player.pos.y);
 				this.stage.set(this.player.pos.x + 1, this.player.pos.y, "baba");
@@ -153,10 +153,17 @@ class game{
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				this.player.under = this.stage.whatis(this.player.pos.x, this.player.pos.y - 1);
 				this.stage.set(this.player.pos.x, this.player.pos.y - 1, "baba");
-			}else if(event_.code == "ArrowRight" && this.player.pos.y != this.stage.sizeframe.y){
+			}else if(event_.code == "ArrowRight" && this.player.pos.y != this.stage.sizeframe.y - 1){ // It's 0-indexed!
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				this.player.under = this.stage.whatis(this.player.pos.x, this.player.pos.y + 1);
 				this.stage.set(this.player.pos.x, this.player.pos.y + 1, "baba");
+			}
+		}
+	}
+	sanitize(){
+		for(let x = 0; x < this.stage.sizeframe.x; x++){
+			for(let y = 0; y < this.stage.sizeframe.y; y++){
+				this.stage.map[x][y] = parseInt(this.stage.map[x][y]);
 			}
 		}
 	}
@@ -214,7 +221,7 @@ class stage{
 				if(this.whatis(x, y + 1) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
-					this.set(x, y + 1, "r");
+					this.set(x, y + 1, mat);
 				}else{
 					this.push(x, y + 1, "r");
 					this.push(x, y, "r");
