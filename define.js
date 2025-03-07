@@ -1,8 +1,16 @@
-var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "unknown" : "blue" };
+var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "unknown" : "green" };
+Object.prototype.reverse = (obj)=>{
+	let n={};
+	for(var key in obj){
+		n[obj[key]] = key;
+	}
+	return n;
+};
 class player{
 	constructor(pos, controls){
 		this.pos = pos;
 		this.controls = controls;
+		this.under = "background";
 		/*this.pressed = {};
 		Object.keys(this.controls).forEach((v, i)=>{
 			document.addEventListener('keydown', (e)=>{
@@ -110,16 +118,47 @@ class game{
 	isdef(prop, val){
 		return this.definitions[prop].includes[val];
 	}
+	lookupprop(val){ // Returns a list of keys that include value
+		let re = [];
+		Object.keys(this.definitions).forEach((v, i)=>{
+			if(this.definitions[v].includes(val)){
+				re.push(v);
+			}
+		});
+		return re;
+	}
 	tick(event_){ // Again, baba only ticks on moves.
+		baba.probe();
+		let youexists = false;
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
-				if(this.stage.whatis(x, y) == "baba"){
+				if(this.lookupprop("text:you").includes("text:"+this.stage.whatis(x, y))){
+					youexists = true;
 					this.player.pos = new vector(x, y);
 				}
 			}
 
 		}
 		// Handle pushing and moving tommorow (goodbye March 5th 2025)
+		if(youexists){
+			if(event_.code == "ArrowUp" && this.player.pos.x != 0){
+				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
+				this.player.under = this.stage.whatis(this.player.pos.x - 1, this.player.pos.y);
+				this.stage.set(this.player.pos.x - 1, this.player.pos.y, "baba");
+			}else if(event_.code == "ArrowDown" && this.player.pos.x != this.stage.sizeframe.x){
+				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
+				this.player.under = this.stage.whatis(this.player.pos.x + 1, this.player.pos.y);
+				this.stage.set(this.player.pos.x + 1, this.player.pos.y, "baba");
+			}else if(event_.code == "ArrowLeft" && this.player.pos.y != 0){
+				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
+				this.player.under = this.stage.whatis(this.player.pos.x, this.player.pos.y - 1);
+				this.stage.set(this.player.pos.x, this.player.pos.y - 1, "baba");
+			}else if(event_.code == "ArrowRight" && this.player.pos.y != this.stage.sizeframe.y){
+				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
+				this.player.under = this.stage.whatis(this.player.pos.x, this.player.pos.y + 1);
+				this.stage.set(this.player.pos.x, this.player.pos.y + 1, "baba");
+			}
+		}
 	}
 
 }
@@ -128,6 +167,7 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = ["wall"];
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall"]
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
 		// material ids: "water", "wall", "flag", "text:baba", "text:is", "text:you"
 	}
@@ -141,8 +181,50 @@ class stage{
 			return "unknown"
 		}
 	}
-	cango(x, y){
-		return !this.solids.includes(this.whatis(x, y));
+	push(x, y, dir){
+		if(this.pushable.includes(this.whatis(x, y))){
+			if(dir == "u" && x != 0){
+				if(this.whatis(x - 1, y) == "background"){
+					let mat = this.whatis(x, y);
+					this.set(x, y, "background");
+					this.set(x - 1, y, mat);
+				}else{
+					this.push(x - 1, y, "u");
+					this.push(x, y, "u");
+				}
+			}else if(dir == "d" && x != this.sizeframe.x){
+				if(this.whatis(x + 1, y) == "background"){
+					let mat = this.whatis(x, y);
+					this.set(x, y, "background");
+					this.set(x + 1, y, mat);
+				}else{
+					this.push(x + 1, y, "d");
+					this.push(x, y, "d");
+				}
+			}else if(dir == "l" && y != 0){
+				if(this.whatis(x, y - 1) == "background"){
+					let mat = this.whatis(x, y);
+					this.set(x, y, "background");
+					this.set(x, y - 1, mat);
+				}else{
+					this.push(x, y - 1, "l");
+					this.push(x, y, "l");
+				}
+			}else if(dir == "r" && y != this.sizeframe.y){
+				if(this.whatis(x, y + 1) == "background"){
+					let mat = this.whatis(x, y);
+					this.set(x, y, "background");
+					this.set(x, y + 1, "r");
+				}else{
+					this.push(x, y + 1, "r");
+					this.push(x, y, "r");
+				}
+			}
+		}
+		return;
+	}
+	set(x, y, mat){
+		this.map[x][y] = Object.reverse(this.materials)[mat];
 	}
 }
 class vector{
@@ -174,5 +256,5 @@ class vector{
 	op(vec, op){
 		this.x = eval(`${this.x}${op}${vec.x}`)
 		this.y = eval(`${this.y}${op}${vec.y}`)
-	}
+		}
 }
