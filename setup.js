@@ -2,6 +2,8 @@ var you = new player(new vector(0, 0), {}); // Make player
 
 var baba = new game(__BUILTIN_STAGES.concat(_USER_STAGES), 0, you, __DEFAULT_COLOR_PROFILE); // Make game
 
+__LoadObjects() // It... Well... Loads the objects.
+
 setTimeout(()=>{ // Display color profile
 	Object.keys(baba.colorprofile).forEach((v, i)=>{
 		document.getElementById(v).style.backgroundColor = baba.colorprofile[v];

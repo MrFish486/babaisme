@@ -1,4 +1,13 @@
-var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green" };
+var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green"}; // DISCONTINUED!!
+var __MATERIALS = ["baba", "background", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water"]
+var __MATERIAL_CACHE = {}
+__LoadObjects = ()=>{
+	__MATERIALS.forEach((v, i)=>{
+		let f = new Image();
+		f.src = `./svg/${v}.svg`;
+		__MATERIAL_CACHE[v] = f;
+	})
+}
 Object.prototype.reverse = (obj)=>{
 	let n={};
 	for(var key in obj){
@@ -43,7 +52,7 @@ class game{
 		this.stage = stages[stagenum];
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
-		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text"];
+		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump"];
 		this.__assignto = ["text:you", "text:stop", "text:win"];
 		this.__assignable.forEach((v, i)=>{
 			this.definitions[v] = []
@@ -72,7 +81,7 @@ class game{
 			}
 		}
 	}
-	render(canvas, debug = false){
+	render(canvas, debug = false, rawcolor = false){
 		let c = canvas.getContext("2d");
 		c.clearRect(0, 0, 500, 500);
 		// To render : Background, Text, Water, Wall, Flag
@@ -82,11 +91,14 @@ class game{
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(debug){console.log(`x=${x},y=${y},color=${this.colorprofile[this.stage.whatis(x, y)]},mat=${this.stage.whatis(x, y)}`)};
-				c.beginPath();
-				c.rect(y * yscale, x * xscale, yscale, xscale);
-				c.fillStyle = this.colorprofile[this.stage.whatis(x, y)];
-				c.fill();
-				c.closePath();
+				c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale);
+				/*
+					c.beginPath();
+					c.rect(y * yscale, x * xscale, yscale, xscale);
+					c.fillStyle = this.colorprofile[this.stage.whatis(x, y)];
+					c.fill();
+					c.closePath();
+				*/
 			}
 		}
 	}
@@ -202,7 +214,8 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win"] // Static
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump"] // Static
+		this.lastpush = undefined
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
 		// material ids: "water", "wall", "flag", "text:baba", "text:is", "text:you"
 	}
@@ -217,9 +230,12 @@ class stage{
 		}
 	}
 	push(x, y, dir){
-		// 1: hit wall, 2: it's solid! 5: success
+		// 1: hit wall, 2: it's solid! 5: success, 6: no.
 		if((x <= -1 && dir == "u") || (x >= this.sizeframe.x && dir == "d") || (y <= -1 && dir == "l") || (y >= this.sizeframe.y && dir == "r")){ // Check for wall
 			return 1;
+		}
+		if(JSON.stringify(this.lastpush) == JSON.stringify({'x':x,y:'y','dir':dir})){ // Check if run again
+			return 6;
 		}
 		if(this.solids.includes("text:"+this.whatis(x, y))){
 			return 2;
