@@ -248,7 +248,7 @@ class stage{
 		if((x <= -1 && dir == "u") || (x >= this.sizeframe.x && dir == "d") || (y <= -1 && dir == "l") || (y >= this.sizeframe.y && dir == "r")){ // Check for wall
 			return 1;
 		}
-		if(JSON.stringify(this.lastpush) == JSON.stringify({'x':x,y:'y','dir':dir})){ // Check if run again
+		if(JSON.stringify(this.lastpush) == JSON.stringify({'x' : x, 'y' : y ,'dir' : dir})){ // Check if run again
 			return 6;
 		}
 		if(this.solids.includes("text:"+this.whatis(x, y))){
@@ -260,9 +260,11 @@ class stage{
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x - 1, y, mat);
+					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5; // 5 means pushed.
 				}else{
 					this.push(x - 1, y, "u");
+					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return this.push(x, y, "u");
 				}
 			}else if(dir == "d" && x != this.sizeframe.x){
@@ -270,9 +272,11 @@ class stage{
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x + 1, y, mat);
+					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
 				}else{
 					this.push(x + 1, y, "d");
+					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return this.push(x, y, "d");
 				}
 			}else if(dir == "l" && y != 0){
@@ -280,9 +284,11 @@ class stage{
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x, y - 1, mat);
+					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
 				}else{
 					this.push(x, y - 1, "l");
+					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return this.push(x, y, "l");
 				}
 			}else if(dir == "r" && y != this.sizeframe.y){
@@ -290,14 +296,18 @@ class stage{
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x, y + 1, mat);
+					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
 				}else{
 					this.push(x, y + 1, "r");
+					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return this.push(x, y, "r");
 				}
 			}
+			this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 			return 1;
 		}
+		this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 		return 5;
 	}
 	set(x, y, mat){
