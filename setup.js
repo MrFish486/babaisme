@@ -12,12 +12,12 @@ setTimeout(()=>{ // Display color profile
 }, 5); // Changed to 5; it sometimes didn't run in time.
 
 setInterval(()=>{ // Set up render thread
+	baba.checkwin();
 	baba.render(document.getElementById("main"));
 }, 100);
 
-setInterval(()=>{ // Switch to current stage
+setInterval(()=>{ // Constantly switch to current stage
 	baba.stage = baba.stages[baba.stagenum];
-	baba.checkwin();
 });
 
 document.onkeydown = (e)=>{ // Trap arrow keys (to stop scrolling)

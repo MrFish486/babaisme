@@ -1,5 +1,5 @@
 var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green"}; // DISCONTINUED!!
-var __MATERIALS = ["baba", "background", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water"]
+var __MATERIALS = ["baba", "background", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall"]
 var __MATERIAL_CACHE = {}
 __LoadObjects = ()=>{
 	__MATERIALS.forEach((v, i)=>{
@@ -81,7 +81,7 @@ class game{
 			}
 		}
 	}
-	render(canvas, debug = false, rawcolor = false){
+	render(canvas, debug = false){
 		let c = canvas.getContext("2d");
 		c.clearRect(0, 0, 500, 500);
 		// To render : Background, Text, Water, Wall, Flag
@@ -91,7 +91,11 @@ class game{
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(debug){console.log(`x=${x},y=${y},color=${this.colorprofile[this.stage.whatis(x, y)]},mat=${this.stage.whatis(x, y)}`)};
-				c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale);
+				if(this.stage.whatis(x, y) == "baba" && this.player.under == "wall"){
+					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * yscale, x * xscale);
+				}else{
+					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale);
+				}
 				/*
 					c.beginPath();
 					c.rect(y * yscale, x * xscale, yscale, xscale);
@@ -206,6 +210,11 @@ class game{
 			this.player = new player(new vector(0, 0), {});
 			this.player.parent_ = this;
 			this.stagenum++;
+		}else if(this.lookupprop("text:win").includes("text:" + this.stage.whatis(this.player.pos.x, this.player.pos.y))){
+			this.player.removeeventlistener();
+			this.player = new player(new vector(0, 0), {});
+			this.player.parent_ = this;
+			this.stagenum++;
 		}
 	}
 }
@@ -214,8 +223,8 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump"] // Static
-		this.lastpush = undefined
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke"] // Static
+		this.lastpush = undefined;
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
 		// material ids: "water", "wall", "flag", "text:baba", "text:is", "text:you"
 	}
@@ -288,6 +297,15 @@ class stage{
 	}
 	set(x, y, mat){
 		this.map[x][y] = Object.reverse(this.materials)[mat];
+	}
+	replace(matfrom, matto){
+		for(let x = 0;x < this.sizeframe.x;x++){
+			for(let y = 0;y < this.sizeframe.y;y++){
+				if(this.whatis(x, y) == matfrom){
+					this.set(x, y, matto);
+				}
+			}
+		}
 	}
 }
 class vector{
