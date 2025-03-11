@@ -122,6 +122,7 @@ var __BUILTIN_STAGES = [
 			4 : "text:win",
 			5 : "text:you",
 			6 : "baba"
-		})
+		}),
+	new stage([[0]],{0:"baba"})
 ]
 var _USER_STAGES = []

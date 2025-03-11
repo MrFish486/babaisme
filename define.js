@@ -92,8 +92,12 @@ class game{
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(debug){console.log(`x=${x},y=${y},color=${this.colorprofile[this.stage.whatis(x, y)]},mat=${this.stage.whatis(x, y)}`)};
 				if(this.stage.whatis(x, y) == "baba" && this.player.under == "wall"){
+					__MATERIAL_CACHE["bababehindwall"].width = yscale;
+					__MATERIAL_CACHE["bababehindwall"].height = xscale;
 					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * yscale, x * xscale);
 				}else{
+					__MATERIAL_CACHE[this.stage.whatis(x, y)].width = yscale;
+					__MATERIAL_CACHE[this.stage.whatis(x, y)].height = xscale;
 					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale);
 				}
 				/*
@@ -205,6 +209,7 @@ class game{
 		}
 	}
 	checkwin(){
+		this.tick({"code":""});
 		if(this.lookupprop("text:win").includes("text:"+this.player.under)){
 			this.player.removeeventlistener();
 			this.player = new player(new vector(0, 0), {});

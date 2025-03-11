@@ -4,12 +4,14 @@ var baba = new game(__BUILTIN_STAGES.concat(_USER_STAGES), 0, you, __DEFAULT_COL
 
 __LoadObjects() // It... Well... Loads the objects.
 
-setTimeout(()=>{ // Display color profile
+/*
+setTimeout(()=>{ // Display color profile, NO LONGER IN USE
 	Object.keys(baba.colorprofile).forEach((v, i)=>{
 		document.getElementById(v).style.backgroundColor = baba.colorprofile[v];
 
 	});
 }, 5); // Changed to 5; it sometimes didn't run in time.
+*/
 
 setInterval(()=>{ // Set up render thread
 	baba.checkwin();
@@ -26,3 +28,24 @@ document.onkeydown = (e)=>{ // Trap arrow keys (to stop scrolling)
 		return false;
 	}
 };
+
+//Handle controls
+setTimeout(()=>{
+	document.getElementById("next").onclick = ()=>{
+		baba.player.removeeventlistener();
+		baba.player = new player(new vector(0, 0), {});
+		baba.player.parent_ = baba;
+		baba.stagenum++;
+	}
+	document.getElementById("prev").onclick = ()=>{
+		baba.player.removeeventlistener();
+		baba.player = new player(new vector(0, 0), {});
+		baba.player.parent_ = baba;
+		baba.stagenum--;
+	}
+	document.getElementById("rsrt").onclick = ()=>{
+		baba.player.removeeventlistener();
+		baba.player = new player(new vector(0, 0), {});
+		baba.player.parent_ = baba;
+	}
+}, 5);
