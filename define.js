@@ -5,6 +5,9 @@ __LoadObjects = ()=>{
 	__MATERIALS.forEach((v, i)=>{
 		let f = new Image();
 		f.src = `./svg/${v}.svg`;
+		if(v == "wall"){
+			f.style = "filter:grayscale(1);";
+		}
 		__MATERIAL_CACHE[v] = f;
 	})
 }
