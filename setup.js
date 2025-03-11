@@ -43,9 +43,4 @@ setTimeout(()=>{
 		baba.player.parent_ = baba;
 		baba.stagenum--;
 	}
-	document.getElementById("rsrt").onclick = ()=>{
-		baba.player.removeeventlistener();
-		baba.player = new player(new vector(0, 0), {});
-		baba.player.parent_ = baba;
-	}
 }, 5);
