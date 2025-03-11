@@ -13,6 +13,8 @@ setTimeout(()=>{ // Display color profile, NO LONGER IN USE
 }, 5); // Changed to 5; it sometimes didn't run in time.
 */
 
+baba.stages[1].pushable.splice(baba.stages[1].pushable.indexOf("baba"), 1); // Remove "baba" from pushable (on level where baba is win)
+
 setInterval(()=>{ // Set up render thread
 	baba.checkwin();
 	baba.render(document.getElementById("main"));
@@ -38,9 +40,13 @@ setTimeout(()=>{
 		baba.stagenum++;
 	}
 	document.getElementById("prev").onclick = ()=>{
+		if(baba.stagenum == 0){
+			return 1;
+		}
 		baba.player.removeeventlistener();
 		baba.player = new player(new vector(0, 0), {});
 		baba.player.parent_ = baba;
 		baba.stagenum--;
+		return 0;
 	}
 }, 5);

@@ -1,5 +1,5 @@
 var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green"}; // DISCONTINUED!!
-var __MATERIALS = ["baba", "background", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall"]
+var __MATERIALS = ["baba", "background", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey"]
 var __MATERIAL_CACHE = {}
 __LoadObjects = ()=>{
 	__MATERIALS.forEach((v, i)=>{
@@ -15,6 +15,15 @@ Object.prototype.reverse = (obj)=>{
 	}
 	return n;
 };
+class request{
+	constructor(orgin, dir){
+		this.orgin = orgin;
+		this.dir = dir;
+	}
+	apply(stage_){
+		stage_.push(this.orgin.x, this.orgin.y, this.dir);
+	}
+}
 class player{
 	constructor(pos, controls){
 		this.pos = pos;
@@ -52,8 +61,8 @@ class game{
 		this.stage = stages[stagenum];
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
-		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump"];
-		this.__assignto = ["text:you", "text:stop", "text:win"];
+		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump", "text:keke", "text:pokey"];
+		this.__assignto = ["text:you", "text:stop", "text:win", "text:moveleft", "text:moveright", "text:kill"];
 		this.__assignable.forEach((v, i)=>{
 			this.definitions[v] = []
 		})
@@ -164,7 +173,28 @@ class game{
 			}
 
 		}
+		// Move the movey things
+		if(!(event_.code == "")){
+			let requests = []
+			for(let x = 0; x < this.stage.sizeframe.x; x++){
+				for(let y = 0; y < this.stage.sizeframe.y; y++){
+					if(this.lookupprop("text:moveleft").includes("text:" + this.stage.whatis(x, y))){
+						requests.push(new request(new vector(x, y), "l"));
+					}else if(this.lookupprop("text:moveright").includes("text:" + this.stage.whatis(x, y))){
+						requests.push(new request(new vector(x, y), "r"));
+					}
+				}
+			}
+			requests.forEach((v, i)=>{
+				v.apply(this.stage);
+			});
+		}
 		// Handle pushing and moving tommorow (goodbye March 5th 2025)
+		if(youexists && this.lookupprop("text:kill").includes("text:" + this.player.under)){
+			this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
+			youexists = false;
+			return;
+		}
 		if(youexists){
 			if(event_.code == "ArrowUp" && this.player.pos.x != 0){
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
@@ -228,7 +258,7 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke"] // Static
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "baba", "keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill"] // Static
 		this.lastpush = undefined;
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
 		// material ids: "water", "wall", "flag", "text:baba", "text:is", "text:you"
@@ -244,14 +274,14 @@ class stage{
 		}
 	}
 	push(x, y, dir){
-		// 1: hit wall, 2: it's solid! 5: success, 6: no.
+		// 1: hit wall, 2: it's solid! 5: success, 6: no / edge
 		if((x <= -1 && dir == "u") || (x >= this.sizeframe.x && dir == "d") || (y <= -1 && dir == "l") || (y >= this.sizeframe.y && dir == "r")){ // Check for wall
 			return 1;
 		}
-		if(JSON.stringify(this.lastpush) == JSON.stringify({'x' : x, 'y' : y ,'dir' : dir})){ // Check if run again
-			return 6;
-		}
-		if(this.solids.includes("text:"+this.whatis(x, y))){
+		//if(JSON.stringify(this.lastpush) == JSON.stringify({'x' : x, 'y' : y ,'dir' : dir})){ // Check if run again
+		//	return 6;
+		//} // Somehow breaks something
+		if(this.solids.includes("text:" + this.whatis(x, y))){
 			return 2;
 		}
 		if(this.pushable.includes(this.whatis(x, y))){
@@ -301,7 +331,11 @@ class stage{
 				}else{
 					this.push(x, y + 1, "r");
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
-					return this.push(x, y, "r");
+					if(!(y > this.sizeframe.x)){
+						return this.push(x, y, "r");
+					}else{
+						return 6;
+					}
 				}
 			}
 			this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
