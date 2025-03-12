@@ -1,0 +1,49 @@
+push(x,y,dir){
+	// 1 : out of bounds! 2 : hit wall! 5 : Success
+	if((x <= -1 && dir == "u") || (x >= this.sizeframe.x && dir == "d") || (y <= -1 && dir == "l") || (y >= this.sizeframe.y && dir == "r")){
+		return 1;
+	}
+	if(!(this.pushable.concat(this.dynamicPushable).includes(this.whatis(x, y)))){
+		return 2;
+	}
+	// U
+	if(dir == "u"){
+		if(this.whatis(x - 1, y) != "background"){
+			this.push(x - 1, y, "u")
+		}
+		let mat = this.whatis(x, y);
+		this.set(x, y, "background");
+		this.set(x - 1, y, mat)
+		return 5;
+	}
+	// D
+	if(dir == "d"){
+		if(this.whatis(x + 1, y) != "background"){
+			this.push(x + 1, y, "u")
+		}
+		let mat = this.whatis(x, y);
+		this.set(x, y, "background");
+		this.set(x + 1, y, mat)
+		return 5;
+	}
+	// L
+	if(dir == "l"){
+		if(this.whatis(x, y - 1) != "background"){
+			this.push(x, y - 1, "u")
+		}
+		let mat = this.whatis(x, y);
+		this.set(x, y, "background");
+		this.set(x, y - 1, mat)
+		return 5;
+	}
+	// R
+	if(dir == "r"){
+		if(this.whatis(x, y + 1) != "background"){
+			this.push(x, y + 1, "u")
+		}
+		let mat = this.whatis(x, y);
+		this.set(x, y, "background");
+		this.set(x, y + 1, mat)
+		return 5;
+	}
+}
