@@ -1,6 +1,6 @@
 var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green"}; // DISCONTINUED!!
-var __MATERIALS = ["baba", "background", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey"]
-var __MATERIAL_CACHE = {}
+var __MATERIALS = ["baba", "background", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup"];
+var __MATERIAL_CACHE = {};
 __LoadObjects = ()=>{
 	__MATERIALS.forEach((v, i)=>{
 		let f = new Image();
@@ -10,7 +10,7 @@ __LoadObjects = ()=>{
 		}
 		__MATERIAL_CACHE[v] = f;
 	})
-}
+};
 Object.prototype.reverse = (obj)=>{
 	let n={};
 	for(var key in obj){
@@ -64,8 +64,8 @@ class game{
 		this.stage = stages[stagenum];
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
-		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump", "text:keke", "text:pokey"];
-		this.__assignto = ["text:you", "text:stop", "text:win", "text:moveleft", "text:moveright", "text:kill"];
+		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump", "text:keke", "text:pokey", "text:rock"];
+		this.__assignto = ["text:you", "text:stop", "text:win", "text:moveleft", "text:moveright", "text:kill", "text:push", "text:movedown", "text:moveup"];
 		this.__assignable.forEach((v, i)=>{
 			this.definitions[v] = []
 		})
@@ -92,6 +92,12 @@ class game{
 				}
 			}
 		}
+		this.stage.dynamicPushable = [];
+		Object.keys(this.definitions).forEach((v, i)=>{
+			if(this.definitions[v].includes("text:push")){
+				this.stage.dynamicPushable.push(v.split("text:")[1]);
+			}
+		});
 	}
 	render(canvas, debug = false){
 		let c = canvas.getContext("2d");
@@ -150,7 +156,8 @@ class game{
 				}
 			}
 		}
-		this.stage.solids = this.lookupprop("text:stop")
+		this.stage.solids = this.lookupprop("text:stop");
+		this.stage.dynamicPushable = this.lookupprop("text:push").map(a=>a.split("text:")[1]);
 	}
 	isdef(prop, val){
 		return this.definitions[prop].includes[val];
@@ -185,11 +192,17 @@ class game{
 						requests.push(new request(new vector(x, y), "l"));
 					}else if(this.lookupprop("text:moveright").includes("text:" + this.stage.whatis(x, y))){
 						requests.push(new request(new vector(x, y), "r"));
+					}else if(this.lookupprop("text:movedown").includes("text:" + this.stage.whatis(x, y))){
+						requests.push(new request(new vector(x, y), "d"));
+					}else if(this.lookupprop("text:moveup").includes("text:" + this.stage.whatis(x, y))){
+						requests.push(new request(new vector(x, y), "u"));
 					}
 				}
 			}
 			requests.forEach((v, i)=>{
-				v.apply(this.stage);
+				try{
+					v.apply(this.stage);
+				}catch{}
 			});
 		}
 		// Handle pushing and moving tommorow (goodbye March 5th 2025)
@@ -261,7 +274,8 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "baba", "keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill"] // Static
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "baba", "keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push"] // Static
+		this.dynamicPushable = []
 		this.lastpush = undefined;
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
 		// material ids: "water", "wall", "flag", "text:baba", "text:is", "text:you"
@@ -287,7 +301,7 @@ class stage{
 		if(this.solids.includes("text:" + this.whatis(x, y))){
 			return 2;
 		}
-		if(this.pushable.includes(this.whatis(x, y))){
+		if(this.pushable.concat(this.dynamicPushable).includes(this.whatis(x, y))){
 			if(dir == "u" && x != 0){
 				if(this.whatis(x - 1, y) == "background"){
 					let mat = this.whatis(x, y);
@@ -295,6 +309,8 @@ class stage{
 					this.set(x - 1, y, mat);
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5; // 5 means pushed.
+				}else if(this.whatis(x - 1, y) == "unknown"){
+					return 1;
 				}else{
 					this.push(x - 1, y, "u");
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
@@ -307,6 +323,8 @@ class stage{
 					this.set(x + 1, y, mat);
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
+				}else if(this.whatis(x + 1, y) == "unknown"){
+					return 1;
 				}else{
 					this.push(x + 1, y, "d");
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
@@ -319,6 +337,8 @@ class stage{
 					this.set(x, y - 1, mat);
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
+				}else if(this.whatis(x, y - 1) == "unknown"){
+					return 1;
 				}else{
 					this.push(x, y - 1, "l");
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
@@ -331,6 +351,8 @@ class stage{
 					this.set(x, y + 1, mat);
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
+				}else if(this.whatis(x, y + 1) == "unknown"){
+					return 1;
 				}else{
 					this.push(x, y + 1, "r");
 					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}

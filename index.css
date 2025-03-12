@@ -1,0 +1,15 @@
+body {
+	background-image: url("./svg/text:baba.svg");
+	background-repeat: repeat;
+}
+div {
+	margin: 10%;
+	display: block;
+	width: 80%;
+	justify-content: center;
+	text-align: center;
+	background-color: white;
+}
+button {
+	background-color: lightgreen;
+}
