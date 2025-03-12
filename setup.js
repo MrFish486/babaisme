@@ -13,6 +13,7 @@ setTimeout(()=>{ // Display color profile, NO LONGER IN USE
 }, 5); // Changed to 5; it sometimes didn't run in time.
 */
 
+// Stage specific setup
 baba.stages[1].pushable.splice(baba.stages[1].pushable.indexOf("baba"), 1); // Remove "baba" from pushable (on level where baba is win)
 
 setInterval(()=>{ // Set up render thread

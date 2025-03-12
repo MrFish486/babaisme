@@ -274,7 +274,7 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push"] // Static
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push", "baba", "keke"] // Static (NOTE: keke and baba are in here so that they don't cause keydown violations on ticks)
 		this.dynamicPushable = []
 		this.lastpush = undefined;
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
