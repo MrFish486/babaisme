@@ -101,7 +101,7 @@ class game{
 	}
 	render(canvas, debug = false){
 		let c = canvas.getContext("2d");
-		c.clearRect(0, 0, 500, 500);
+		c.clearRect(0, 0, canvas.width, canvas.height);
 		// To render : Background, Text, Water, Wall, Flag
 		let xscale = canvas.width / this.stage.sizeframe.x;
 		let yscale = canvas.height / this.stage.sizeframe.y;
@@ -112,11 +112,11 @@ class game{
 				if(this.stage.whatis(x, y) == "baba" && this.player.under == "wall"){
 					__MATERIAL_CACHE["bababehindwall"].width = yscale;
 					__MATERIAL_CACHE["bababehindwall"].height = xscale;
-					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * yscale, x * xscale);
+					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * xscale, x * yscale, xscale, yscale);
 				}else{
 					__MATERIAL_CACHE[this.stage.whatis(x, y)].width = yscale;
 					__MATERIAL_CACHE[this.stage.whatis(x, y)].height = xscale;
-					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale);
+					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * xscale, x * yscale, xscale, yscale);
 				}
 				/*
 					c.beginPath();
@@ -274,7 +274,7 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "baba", "keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push"] // Static
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push"] // Static
 		this.dynamicPushable = []
 		this.lastpush = undefined;
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
