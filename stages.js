@@ -164,6 +164,20 @@ var __BUILTIN_STAGES = [
 			16 : "flag",
 			17 : "text:flag",
 			18 : "text:win"
+		}),
+	new stage([
+			[1,2,3],
+			[5,2,6],
+			[0,0,4]
+		],
+		{
+			0 : "background",
+			1 : "text:game",
+			2 : "text:is",
+			3 : "text:loop",
+			4 : "keke",
+			5 : "text:keke",
+			6 : "text:moveleft"
 		})
 ]
 var _USER_STAGES = []
