@@ -272,7 +272,8 @@ class stage{
 		this.materials = materials;
 		this.solids = [] // Definable
 		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push", "baba", "keke"] // Static (NOTE: keke and baba are in here so that they don't cause keydown violations on ticks)
-		this.dynamicPushable = []
+		this.dynamicPushable = [];
+		this.solidsStatic = ["unknown"];
 		this.lastpush = undefined;
 		this.pushcount = 0;
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
@@ -294,117 +295,69 @@ class stage{
 			return 1;
 		}
 		//Here's an idea: First, try to trace a straight path from x,y to the edge. If there it hits unknown without finding any background, then it returns 2.
-		//Here's the execution
-		let tracepath = [];
-		if(dir == "u"){
-			for(let e = x;true;e--){
-				if(this.whatis(e, y) == "unknown"){
-					break;
-				}else{
-					tracepath.push(this.whatis(e, y));
-				}
-			}
-			if(!tracepath.includes("background")){
-				return 1;
-			}
-		}else if(dir == "d"){
-			for(let e = x;true;e++){
-				if(this.whatis(e, y) == "unknown"){
-					break;
-				}else{
-					tracepath.push(this.whatis(e, y));
-				}
-			}
-			if(!tracepath.includes("background")){
-				return 1;
-			}
-		}else if(dir == "l"){
-			for(let e = y;true;e--){
-				if(this.whatis(e, y) == "unknown"){
-					break;
-				}else{
-					tracepath.push(this.whatis(e, y));
-				}
-			}
-			if(!tracepath.includes("background")){
-				return 1;
-			}
-		}else if(dir == "r"){
-			for(let e = y;true;e++){
-				if(this.whatis(e, y) == "unknown"){
-					break;
-				}else{
-					tracepath.push(this.whatis(e, y));
-				}
-			}
-			if(!tracepath.includes("background")){
-				return 1;
-			}
-		}
-		//if(JSON.stringify(this.lastpush) == JSON.stringify({'x' : x, 'y' : y ,'dir' : dir})){ // Check if run again
-		//	return 6;
-		//} // Somehow breaks something
-		if(this.solids.includes("text:" + this.whatis(x, y))){
+		if(this.solids.concat(this.solidsStatic).includes("text:" + this.whatis(x, y))){
 			return 2;
 		}
 		if(this.pushable.concat(this.dynamicPushable).includes(this.whatis(x, y))){
-			if(dir == "u" && x != 0){
+			if(dir == "u"){
 				if(this.whatis(x - 1, y) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x - 1, y, mat);
-					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5; // 5 means pushed.
 				}else{
-					console.log("Calling sub process")
-					this.push(x - 1, y, "u");
-					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
-					return this.push(x, y, "u");
+					if(this.push(x - 1, y, "u") == 5){
+						this.push(x, y, "u");
+						return 5;
+					}else{
+						return 1;
+					}
 				}
-			}else if(dir == "d" && x != this.sizeframe.x){
+			}else if(dir == "d"){
 				if(this.whatis(x + 1, y) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x + 1, y, mat);
-					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
 				}else{
-					console.log("Calling sub process")
-					this.push(x + 1, y, "d");
-					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
-					return this.push(x, y, "d");
+					if(this.push(x + 1, y, "d") == 5){
+						this.push(x, y, "d");
+						return 5;
+					}else{
+						return 1;
+					}
 				}
-			}else if(dir == "l" && y != 0){
+			}else if(dir == "l"){
 				if(this.whatis(x, y - 1) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x, y - 1, mat);
-					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
 				}else{
-					console.log("Calling sub process")
-					this.push(x, y - 1, "l");
-					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
-					return this.push(x, y, "l");
+					if(this.push(x, y - 1, "l") == 5){
+						this.push(x, y, "l");
+						return 5;
+					}else{
+						return 1;
+					}
 				}
-			}else if(dir == "r" && y != this.sizeframe.y){
+			}else if(dir == "r"){
 				if(this.whatis(x, y + 1) == "background"){
 					let mat = this.whatis(x, y);
 					this.set(x, y, "background");
 					this.set(x, y + 1, mat);
-					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 					return 5;
 				}else{
-					console.log("Calling sub process")
-					this.push(x, y + 1, "r");
-					this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
-					return this.push(x, y, "r")
+					if(this.push(x, y + 1, "r") == 5){
+						this.push(x, y, "r")
+						return 5;
+					}else{
+						return 1;
+					}
 				}
 			}
-			this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 			return 1;
 		}
-		this.lastpush = {'x' : x, 'y' : y, 'dir' : dir}
 		return 5;
 	}
 	set(x, y, mat){
