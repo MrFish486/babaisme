@@ -1,6 +1,25 @@
 <head>
-	<link rel="stylesheet" href="./index.css"></link>
 	<script src="define.js"></script>
+	<script>
+		s = new CSSStyleSheet();
+		s.replaceSync(`
+body {
+	background-image: url("./svg/${__MATERIALS[Math.floor(__MATERIALS.length*Math.random())]}.svg");
+	background-repeat: repeat;
+}
+div {
+	margin: 10%;
+	display: block;
+	width: 80%;
+	justify-content: center;
+	text-align: center;
+	background-color: white;
+}
+button {
+	background-color: lightgreen;
+}`);
+	document.adoptedStyleSheets = [s];
+	</script>
 </head>
 <body>
 	<div>
