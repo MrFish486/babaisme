@@ -1,4 +1,5 @@
 <head>
+	<title>Baba is me - Level creator</title>
 	<link rel="stylesheet" href="./baba.css"></link>
 	<script src="./define.js"></script>
 	<script src="./stages.js"></script>
@@ -8,12 +9,19 @@
 	<div class="panel">
 		<h1>It's a level editor</h1>
 		<h3>Go nuts</h3>
-		<a>You can make levels, download them as .json files, and import them into the game. Use the arrow keys to move the cursor around, and space to set the selected tile to the selected material.</a><br>
+		<a>You can make levels, download them as .json files, and import them into the game. Use the arrow keys to move the cursor around, and space to set the selected tile to the selected material. You can also use E to pick the material under the cursor, and Q to erase the tile under the cursor.</a><br>
 	</div>
 	<canvas id="main" width="500px" height="500px"></canvas>
-	<div id="tools" class="panel">
-		<button id="download">Download level</button><br>
+	<div id="filetools" class="panel">
+		<a>Import level : </a><input type="file" id="upload"></input><br>
+		<a>Export level : </a><button id="download">Download level</button><br>
+	</div>
+	<div id="materialpanel" class="panel">
 		<a>Selected material : </a><select id="material"></select><br>
-		<canvas id="selected" width="50px" height="50px"></canvas>
+		<canvas id="selected" width="50px" height="50px"></canvas><br>
+	</div>
+	<div id="sizepanel" class="panel">
+		<a>Size (changing will clear board) : <input type="range" id="size" min="3" max="40" value="10"></input>
+		<a id="sizedisplay">Loading...</a>
 	</div>
 </body>
