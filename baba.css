@@ -16,3 +16,18 @@ button {
 	background-color: orange;
 	color: black;
 }
+div.panel {
+	padding: 5px;
+	align-items: center;
+	border: 2px solid black;
+	background-color: lightgray;
+	display: block;
+	width: 490px;
+	margin: auto;
+	justify-content: top;
+	text-align: center;
+}
+input {
+	background-color: orange;
+	border:2px solid black;
+}

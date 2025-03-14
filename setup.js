@@ -2,6 +2,8 @@ var you = new player(new vector(0, 0), {}); // Make player
 
 var baba = new game(__BUILTIN_STAGES.concat(_USER_STAGES), 0, you, __DEFAULT_COLOR_PROFILE); // Make game
 
+var fileReader = new FileReader();
+
 __LoadObjects() // It... Well... Loads the objects.
 
 /*
@@ -49,6 +51,14 @@ setTimeout(()=>{
 		baba.player.parent_ = baba;
 		baba.stagenum--;
 		return 0;
+	}
+	document.getElementById("upld").onchange = ()=>{
+		fileReader.readAsText(document.getElementById("upld").files[0])
+		setTimeout(()=>{
+			let p = JSON.parse(fileReader.result);
+			baba.stages[-1] = new stage(p.map, p.mat);
+			baba.stagenum = -1;
+		},5);
 	}
 }, 5);
 

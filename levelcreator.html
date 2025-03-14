@@ -1,7 +1,19 @@
 <head>
+	<link rel="stylesheet" href="./baba.css"></link>
 	<script src="./define.js"></script>
+	<script src="./stages.js"></script>
 	<script src="./levelcreatorsetup.js"></script>
 </head>
 <body>
-	<canvas width="500px" height="500px"></canvas>
+	<div class="panel">
+		<h1>It's a level editor</h1>
+		<h3>Go nuts</h3>
+		<a>You can make levels, download them as .json files, and import them into the game. Use the arrow keys to move the cursor around, and space to set the selected tile to the selected material.</a><br>
+	</div>
+	<canvas id="main" width="500px" height="500px"></canvas>
+	<div id="tools" class="panel">
+		<button id="download">Download level</button><br>
+		<a>Selected material : </a><select id="material"></select><br>
+		<canvas id="selected" width="50px" height="50px"></canvas>
+	</div>
 </body>
