@@ -1,7 +1,18 @@
+var __VERSIONS = []
+
 var you = new player(new vector(0, 0), {}); // Make player
 
 var baba = new game(__BUILTIN_STAGES.concat(_USER_STAGES), 0, you, __DEFAULT_COLOR_PROFILE); // Make game
 
+
+__UNDO = ()=>{
+	if(__VERSIONS.length != 0){
+		baba.stage.map = __VERSIONS.pop();
+		return true;
+	}else{
+		return false;
+	}
+}
 var fileReader = new FileReader();
 
 __LoadObjects() // It... Well... Loads the objects.
@@ -24,7 +35,10 @@ setInterval(()=>{ // Set up render thread
 }, 100);
 
 setInterval(()=>{ // Constantly switch to current stage
-	baba.stage = baba.stages[baba.stagenum];
+	if(baba.stage != baba.stages[baba.stagenum]){
+		baba.stage = baba.stages[baba.stagenum];
+		__VERSIONS = [];
+	}
 });
 
 document.onkeydown = (e)=>{ // Trap arrow keys (to stop scrolling)
@@ -60,6 +74,7 @@ setTimeout(()=>{
 			baba.stagenum = -1;
 		},5);
 	}
+	document.getElementById("music").hidden = true;
 }, 5);
 
 setInterval(()=>{
@@ -67,3 +82,8 @@ setInterval(()=>{
 		baba.tick({"code":"gameisloop"});
 	}
 },1000) // Setup "game is loop" thread
+
+playmusic = ()=>{
+	document.getElementById("music").children[0] = ["./audio/music/baba.wav", "./audio.music/keke.wav"][Math.floor(Math.random())];
+	document.getElementById("music").play();
+}

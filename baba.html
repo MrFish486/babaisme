@@ -18,6 +18,11 @@
 	<button onclick="baba.tick({'code' : 'ArrowDown'})">D</button>
 	<button onclick="baba.tick({'code' : 'ArrowLeft'})">L</button>
 	<button onclick="baba.tick({'code' : 'ArrowRight'})">R</button>
+	<br><br>
+	<button onclick="playmusic();this.hidden = true">Start music</button>
+	<audio controls loop autoplay hidden id="music">
+		<source src="./audio/sfx/silence.wav" type="audio/mpeg"></source>
+	</audio>
 	<!--
 	<table>
 		<tr>

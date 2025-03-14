@@ -1,6 +1,7 @@
 var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green"}; // DISCONTINUED!!
-var __MATERIALS = ["background", "baba", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup", "text:loop", "text:game"];
+var __MATERIALS = ["background", "baba", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup", "text:loop", "text:game", "text:sink", "text:water"];
 var __MATERIAL_CACHE = {};
+
 __LoadObjects = ()=>{
 	__MATERIALS.forEach((v, i)=>{
 		let f = new Image();
@@ -42,9 +43,11 @@ class player{
 				if(e.code == v){
 					this.pressed[controls[v]] = false;
 				}
+			current.map = p.map;
+			current.materials = p.mat;
 			})
 		})*/ // We don't need to keep reading pressed keys
-		this.listen = (e)=>{this.parent_.tick(e)}
+		this.listen = e=>{this.parent_.tick(e)}
 		document.addEventListener('keydown', this.listen); // Because this.parent_ isn't defined yet.
 	}
 	removeeventlistener(){
@@ -61,8 +64,8 @@ class game{
 		this.stage = stages[stagenum];
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
-		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump", "text:keke", "text:pokey", "text:rock", "text:game"];
-		this.__assignto = ["text:you", "text:stop", "text:win", "text:moveleft", "text:moveright", "text:kill", "text:push", "text:movedown", "text:moveup", "text:loop"];
+		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump", "text:keke", "text:pokey", "text:rock", "text:game", "text:water"];
+		this.__assignto = ["text:you", "text:stop", "text:win", "text:moveleft", "text:moveright", "text:kill", "text:push", "text:movedown", "text:moveup", "text:loop", "text:sink"];
 		this.__assignable.forEach((v, i)=>{
 			this.definitions[v] = []
 		})
@@ -169,6 +172,14 @@ class game{
 		return re;
 	}
 	tick(event_){ // Again, baba only ticks on moves.
+		if(event_.code == "KeyZ"){
+			if(__UNDO()){
+				new Audio("./audio/sfx/pulselowhard.wav").play();
+			}
+			return;
+		}else if(event_.code == "ArrowUp" || event_.code == "ArrowDown" || event_.code == "ArrowLeft" || event_.code == "ArrowRight"){
+			__VERSIONS.push(JSON.parse(JSON.stringify(this.stage.map)));
+		}
 		baba.probe();
 		let youexists = false;
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
@@ -204,12 +215,19 @@ class game{
 		}
 		// Handle pushing and moving tommorow (goodbye March 5th 2025)
 		if(youexists && this.lookupprop("text:kill").includes("text:" + this.player.under)){
+			new Audio("./audio/sfx/fail.wav").play();
 			this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
+			youexists = false;
+			return;
+		}else if(youexists && this.lookupprop("text:sink").includes("text:" + this.stage.whatis(this.player.pos.x, this.player.pos.y)) && this.player.under == "water"){
+			new Audio("./audio/sfx/fail.wav").play();
+			this.stage.set(this.player.pos.x, this.player.pos.y, "water")
 			youexists = false;
 			return;
 		}
 		if(youexists){
 			if(event_.code == "ArrowUp" && this.player.pos.x != 0){
+				new Audio("./audio/sfx/pulsehighsoft.wav").play();
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x - 1, this.player.pos.y, "u") == 5){
@@ -218,6 +236,7 @@ class game{
 					}else{throw("")}
 				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
 			}else if(event_.code == "ArrowDown" && this.player.pos.x != this.stage.sizeframe.x - 1){
+				new Audio("./audio/sfx/pulsehighsoft.wav").play();
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x + 1, this.player.pos.y, "d") == 5){
@@ -226,6 +245,7 @@ class game{
 					}else{throw("")}
 				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
 			}else if(event_.code == "ArrowLeft" && this.player.pos.y != 0){
+				new Audio("./audio/sfx/pulsehighsoft.wav").play();
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x, this.player.pos.y - 1, "l") == 5){
@@ -234,6 +254,7 @@ class game{
 					}else{throw("")}
 				}catch{this.stage.set(this.player.pos.x, this.player.pos.y, this.lookupprop("text:you")[0].split("text:")[1])}
 			}else if(event_.code == "ArrowRight" && this.player.pos.y != this.stage.sizeframe.y - 1){ // It's 0-indexed!
+				new Audio("./audio/sfx/pulsehighsoft.wav").play();
 				this.stage.set(this.player.pos.x, this.player.pos.y, this.player.under);
 				try{
 					if(this.stage.push(this.player.pos.x, this.player.pos.y + 1, "r") == 5){
@@ -254,11 +275,13 @@ class game{
 	checkwin(){
 		this.tick({"code":""});
 		if(this.lookupprop("text:win").includes("text:"+this.player.under)){
+			new Audio("./audio/sfx/success.wav").play();
 			this.player.removeeventlistener();
 			this.player = new player(new vector(0, 0), {});
 			this.player.parent_ = this;
 			this.stagenum++;
 		}else if(this.lookupprop("text:win").includes("text:" + this.stage.whatis(this.player.pos.x, this.player.pos.y))){
+			new Audio("./audio/sfx/success.wav").play();
 			this.player.removeeventlistener();
 			this.player = new player(new vector(0, 0), {});
 			this.player.parent_ = this;
@@ -271,7 +294,7 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push", "baba", "keke", "text:game", "text:loop"] // Static (NOTE: keke and baba are in here so that they don't cause keydown violations on ticks)
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push", "baba", "keke", "text:game", "text:loop", "text:sink"] // Static (NOTE: keke and baba are in here so that they don't cause keydown violations on ticks)
 		this.dynamicPushable = [];
 		this.solidsStatic = ["unknown"];
 		this.lastpush = undefined;
