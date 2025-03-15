@@ -178,7 +178,7 @@ class game{
 			}
 			return;
 		}else if(event_.code == "ArrowUp" || event_.code == "ArrowDown" || event_.code == "ArrowLeft" || event_.code == "ArrowRight"){
-			__VERSIONS.push(JSON.parse(JSON.stringify(this.stage.map)));
+			__VERSIONS.push(JSON.parse(JSON.stringify({map : this.stage.map, under : this.player.under})));
 		}
 		baba.probe();
 		let youexists = false;

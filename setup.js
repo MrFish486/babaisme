@@ -7,7 +7,9 @@ var baba = new game(__BUILTIN_STAGES.concat(_USER_STAGES), 0, you, __DEFAULT_COL
 
 __UNDO = ()=>{
 	if(__VERSIONS.length != 0){
-		baba.stage.map = __VERSIONS.pop();
+		let e = __VERSIONS.pop();
+		baba.stage.map = e.map;
+		baba.player.under = e.under;
 		return true;
 	}else{
 		return false;
