@@ -6,6 +6,20 @@ __MATERIALS.forEach((v, i)=>{
 	setTimeout(()=>{document.getElementById("material").innerHTML += `<option value=${v}>${v}</option>`},5);
 });
 
+parseFile = (f)=> {
+	return new Promise((resolve, reject)=>{
+		let c = '';
+		let r = new FileReader();
+		r.onload = (e)=>{
+			resolve(e.target.result.split("/\r\n|\n/"));
+		};
+		r.onerror = (e)=>{
+			reject(e);
+		}
+		r.readAsText(f);
+	});
+}
+
 f = new FileReader();
 current = new stage(__EMPTY_MAP, __MatObj);
 selected = "background";
@@ -88,12 +102,19 @@ setTimeout(()=>{
 		URL.revokeObjectURL(link.href);
 	}
 	document.getElementById("upload").onchange=()=>{
+		/*
 		f.readAsText(document.getElementById("upload").files[0]);
 		setTimeout(()=>{
 			let p = JSON.parse(f.result);
 			current = new stage(p.map, p.mat);
 			document.getElementById("size").value = p.size;
-		},5);
+		}, 5);
+		*/
+		parseFile(document.getElementById("upload").files[0]).then(e=>{
+			let p = JSON.parse(e[0]);
+			current = new stage(p.map, p.mat);
+			document.getElementById("size").value = p.size;
+		});
 	}
 	document.getElementById("size").onchange=()=>{
 		let a = []

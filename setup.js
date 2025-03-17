@@ -81,16 +81,7 @@ setTimeout(()=>{
 		return 0;
 	}
 	document.getElementById("upld").onchange = ()=>{
-		/*
-		fileReader.readAsText(document.getElementById("upld").files[0]).then(()=>{
-			console.log(fileReader.result);
-			let p = JSON.parse(fileReader.result);
-			console.log(p);
-			baba.stages[-1] = new stage(p.map, p.mat);
-			baba.stagenum = -1;
-		});
-		*/
-		parseFile(document.getElementById("upld").files[0]).then((e)=>{
+		parseFile(document.getElementById("upld").files[0]).then(e=>{
 			let p = JSON.parse(e[0]);
 			baba.stages[-1] = new stage(p.map, p.mat);
 			baba.stagenum = -1;
