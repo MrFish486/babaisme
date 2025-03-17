@@ -4,6 +4,19 @@ var you = new player(new vector(0, 0), {}); // Make player
 
 var baba = new game(__BUILTIN_STAGES.concat(_USER_STAGES), 0, you, __DEFAULT_COLOR_PROFILE); // Make game
 
+parseFile = (f)=> {
+	return new Promise((resolve, reject)=>{
+		let c = '';
+		let r = new FileReader();
+		r.onload = (e)=>{
+			resolve(e.target.result.split("/\r\n|\n/"));
+		};
+		r.onerror = (e)=>{
+			reject(e);
+		}
+		r.readAsText(f);
+	});
+}
 
 __UNDO = ()=>{
 	if(__VERSIONS.length != 0){
@@ -15,7 +28,6 @@ __UNDO = ()=>{
 		return false;
 	}
 }
-var fileReader = new FileReader();
 
 __LoadObjects() // It... Well... Loads the objects.
 
@@ -69,12 +81,20 @@ setTimeout(()=>{
 		return 0;
 	}
 	document.getElementById("upld").onchange = ()=>{
-		fileReader.readAsText(document.getElementById("upld").files[0])
-		setTimeout(()=>{
+		/*
+		fileReader.readAsText(document.getElementById("upld").files[0]).then(()=>{
+			console.log(fileReader.result);
 			let p = JSON.parse(fileReader.result);
+			console.log(p);
 			baba.stages[-1] = new stage(p.map, p.mat);
 			baba.stagenum = -1;
-		},5);
+		});
+		*/
+		parseFile(document.getElementById("upld").files[0]).then((e)=>{
+			let p = JSON.parse(e[0]);
+			baba.stages[-1] = new stage(p.map, p.mat);
+			baba.stagenum = -1;
+		});
 	}
 	document.getElementById("music").hidden = true;
 }, 5);
