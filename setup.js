@@ -4,19 +4,7 @@ var you = new player(new vector(0, 0), {}); // Make player
 
 var baba = new game(__BUILTIN_STAGES.concat(_USER_STAGES), 0, you, __DEFAULT_COLOR_PROFILE); // Make game
 
-parseFile = (f)=> {
-	return new Promise((resolve, reject)=>{
-		let c = '';
-		let r = new FileReader();
-		r.onload = (e)=>{
-			resolve(e.target.result.split("/\r\n|\n/"));
-		};
-		r.onerror = (e)=>{
-			reject(e);
-		}
-		r.readAsText(f);
-	});
-}
+var __GRID = false;
 
 __UNDO = ()=>{
 	if(__VERSIONS.length != 0){
@@ -43,9 +31,22 @@ setTimeout(()=>{ // Display color profile, NO LONGER IN USE
 // Stage specific setup
 baba.stages[1].pushable.splice(baba.stages[1].pushable.indexOf("baba"), 1); // Remove "baba" from pushable (on level where baba is win)
 
+document.addEventListener("keydown", e=>{
+	if(e.code == "KeyG"){
+		__GRID = true;
+	}
+});
+
+document.addEventListener("keyup", e=>{
+	if(e.code == "KeyG"){
+		__GRID = false;
+	}
+});
+
 setInterval(()=>{ // Set up render thread
 	baba.checkwin();
 	baba.render(document.getElementById("main"));
+	document.getElementById("level.name").innerHTML = baba.stage.name;
 }, 100);
 
 setInterval(()=>{ // Constantly switch to current stage
@@ -65,6 +66,9 @@ document.onkeydown = (e)=>{ // Trap arrow keys (to stop scrolling)
 //Handle controls
 setTimeout(()=>{
 	document.getElementById("next").onclick = ()=>{
+		if(baba.stagenum == baba.stages.length - 1){
+			return 1;
+		}
 		baba.player.removeeventlistener();
 		baba.player = new player(new vector(0, 0), {});
 		baba.player.parent_ = baba;
@@ -83,7 +87,7 @@ setTimeout(()=>{
 	document.getElementById("upld").onchange = ()=>{
 		parseFile(document.getElementById("upld").files[0]).then(e=>{
 			let p = JSON.parse(e[0]);
-			baba.stages[-1] = new stage(p.map, p.mat);
+			baba.stages[-1] = new stage(p.map, p.mat, p.name);
 			baba.stagenum = -1;
 		});
 	}

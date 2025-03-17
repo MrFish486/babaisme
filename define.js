@@ -1,6 +1,20 @@
 var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green"}; // DISCONTINUED!!
-var __MATERIALS = ["background", "baba", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup", "text:loop", "text:game", "text:sink", "text:water"];
+var __MATERIALS = ["background", "baba", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup", "text:loop", "text:game", "text:sink", "text:water", "bababehindwater"];
 var __MATERIAL_CACHE = {};
+
+parseFile = (f)=> {
+	return new Promise((resolve, reject)=>{
+		let c = '';
+		let r = new FileReader();
+		r.onload = (e)=>{
+			resolve(e.target.result.split("/\r\n|\n/"));
+		};
+		r.onerror = (e)=>{
+			reject(e);
+		}
+		r.readAsText(f);
+	});
+}
 
 __LoadObjects = ()=>{
 	__MATERIALS.forEach((v, i)=>{
@@ -9,6 +23,12 @@ __LoadObjects = ()=>{
 		__MATERIAL_CACHE[v] = f;
 	})
 };
+
+__GetFile = n=>{
+	var t;
+	fetch(n).then(r=>r.text()).then(w=>t=w).catch(console.error);
+	return t;
+}
 Object.prototype.reverse = (obj)=>{
 	let n={};
 	for(var key in obj){
@@ -110,13 +130,11 @@ class game{
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(debug){console.log(`x=${x},y=${y},color=${this.colorprofile[this.stage.whatis(x, y)]},mat=${this.stage.whatis(x, y)}`)};
 				if(this.stage.whatis(x, y) == "baba" && this.player.under == "wall"){
-					__MATERIAL_CACHE["bababehindwall"].width = yscale;
-					__MATERIAL_CACHE["bababehindwall"].height = xscale;
-					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * xscale, x * yscale, xscale, yscale);
+					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * yscale, x * xscale, xscale, yscale);
+				}else if(this.stage.whatis(x, y) == "baba" && this.player.under == "water"){
+					c.drawImage(__MATERIAL_CACHE["bababehindwater"], y * yscale, x * xscale, xscale, yscale);
 				}else{
-					__MATERIAL_CACHE[this.stage.whatis(x, y)].width = yscale;
-					__MATERIAL_CACHE[this.stage.whatis(x, y)].height = xscale;
-					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * xscale, x * yscale, xscale, yscale);
+					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale, xscale, yscale);
 				}
 				/*
 					c.beginPath();
@@ -125,6 +143,18 @@ class game{
 					c.fill();
 					c.closePath();
 				*/
+			}
+		}
+		if(__GRID){
+			for(let x = 0; x < this.stage.sizeframe.x; x++){
+				for(let y = 0; y < this.stage.sizeframe.y; y++){
+					c.beginPath();
+					c.rect(y * xscale, x * yscale, xscale, yscale);
+					c.strokeStyle = "red";
+					c.strokeWidth = 5;
+					c.stroke();
+					c.closePath();
+				}
 			}
 		}
 	}
@@ -265,15 +295,11 @@ class game{
 			}
 		}
 	}
-	sanitize(){
-		for(let x = 0; x < this.stage.sizeframe.x; x++){
-			for(let y = 0; y < this.stage.sizeframe.y; y++){
-				this.stage.map[x][y] = parseInt(this.stage.map[x][y]);
-			}
-		}
-	}
 	checkwin(){
 		this.tick({"code":""});
+		if(this.stagenum == this.stages.length - 1){
+			return 1;
+		}
 		if(this.lookupprop("text:win").includes("text:"+this.player.under)){
 			new Audio("./audio/sfx/success.wav").play();
 			this.player.removeeventlistener();
@@ -290,7 +316,8 @@ class game{
 	}
 }
 class stage{
-	constructor(map, materials){
+	constructor(map, materials, name){
+		this.name = name;
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
@@ -301,6 +328,13 @@ class stage{
 		this.pushcount = 0;
 		this.sizeframe = new vector(this.map.length, this.map[0].length);
 		// material ids: "water", "wall", "flag", "text:baba", "text:is", "text:you"
+	}
+	sanitize(){
+		for(let x = 0; x < this.sizeframe.x; x++){
+			for(let y = 0; y < this.sizeframe.y; y++){
+				this.map[x][y] = parseInt(this.map[x][y]);
+			}
+		}
 	}
 	whatis(x, y){
 		try{

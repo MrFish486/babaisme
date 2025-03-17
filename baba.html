@@ -7,12 +7,13 @@
 </head>
 <body>
 	<h2>Baba is me</h2>
-	<a href="index.html">Home</a>
+	<h3 style="border:2px solid black;background-color:lightgray;display:block;width:20%;text-align:auto;margin:0 auto;" id="level.name"></h3><br>
+	<br>
+	<canvas id="main" width="500px" height="500px"></canvas><br><br>
+	<a href="index.html">Home page</a>
 	<button id="prev">Previous Level</button>
-	<button id="next">Next Level</button>
+	<button id="next">Next Level</button><br><br>
 	<a>Upload level:</a><input type="file" id="upld"></button>
-	<br><br>
-	<canvas id="main" width="500px" height="500px"></canvas>
 	<h4>Use the arrow keys, or use the U / D / L / R buttons below.</h4>
 	<h5>Tip: you can make a statement in any cardinal direction, including up!</h5>
 	<button onclick="baba.tick({'code' : 'ArrowUp'})">U</button>
@@ -20,7 +21,7 @@
 	<button onclick="baba.tick({'code' : 'ArrowLeft'})">L</button>
 	<button onclick="baba.tick({'code' : 'ArrowRight'})">R</button>
 	<br><br>
-	<button onclick="playmusic();this.hidden = true">Start music</button>
+	<button onclick="playmusic();this.hidden = true">Start seemless audio</button>
 	<audio controls loop autoplay hidden id="music">
 		<source src="./audio/sfx/silence.wav" type="audio/mpeg"></source>
 	</audio>

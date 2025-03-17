@@ -1,3 +1,11 @@
+loadFromJSON = f=>{
+	var q;
+	parseFile(f).then(e=>{
+		let p = JSON.parse(f[0]);
+		var q = new stage(p.map, p.mat, p.name);
+	});
+	return q || new stage([[0]], {0 : "unknown"}, "Error loading level.");
+}
 var __EMPTY_MAP = [
 	[0,0,0,0,0,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,0],
@@ -36,7 +44,7 @@ var __BUILTIN_STAGES = [
 			9 : "text:win",
 			10 : "flag"
 			
-		}),
+		}, "A new game"),
 	new stage([
 			[7,7,7,7,7,7,7,7,7,7,7],
 			[7,0,0,0,0,0,0,0,0,0,7],
@@ -61,7 +69,7 @@ var __BUILTIN_STAGES = [
 			8 : "text:wall",
 			9 : "text:stop",
 			10 : "baba"
-		}),
+		}, "Spiral : 'baba is win'"),
 	new stage([
 			[1,2,3,0,0,0,0,0,0,9],
 			[0,0,0,0,0,0,0,0,0,0],
@@ -86,7 +94,7 @@ var __BUILTIN_STAGES = [
 			8 : "wall",
 			9 : "text:flag",
 			10 : "flag"
-		}),
+		}, "Word is stuck"),
 	new stage([
 			[5,2,6,4,8,2,9,4,0,7],
 			[4,4,4,4,4,4,4,4,0,0],
@@ -113,7 +121,7 @@ var __BUILTIN_STAGES = [
 			10 : "text:lump",
 			11 : "lump",
 			12 : "baba"
-		}),
+		}, "The trial of the lump"),
 	new stage([
 			[6,0,0,0,0,0,0,7,8,3],
 			[0,0,0,0,0,0,0,7,2,2],
@@ -143,7 +151,7 @@ var __BUILTIN_STAGES = [
 			13 : "text:pokey",
 			14 : "text:kill",
 			15 : "pokey"
-		}),
+		}, "\"Who's Keke?\""),
 	new stage([
 			[12,0,13,0,0,0,1,2,3,16],
 			[0,2,0,0,7,0,4,2,5,0],
@@ -176,20 +184,6 @@ var __BUILTIN_STAGES = [
 			16 : "flag",
 			17 : "text:flag",
 			18 : "text:win"
-		}),
-	new stage([
-			[1,2,3],
-			[5,2,6],
-			[0,0,4]
-		],
-		{
-			0 : "background",
-			1 : "text:game",
-			2 : "text:is",
-			3 : "text:loop",
-			4 : "keke",
-			5 : "text:keke",
-			6 : "text:moveleft"
-		})
+		}, "Keke can move")
 ]
 var _USER_STAGES = []

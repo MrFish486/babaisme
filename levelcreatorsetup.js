@@ -6,21 +6,13 @@ __MATERIALS.forEach((v, i)=>{
 	setTimeout(()=>{document.getElementById("material").innerHTML += `<option value=${v}>${v}</option>`},5);
 });
 
-parseFile = (f)=> {
-	return new Promise((resolve, reject)=>{
-		let c = '';
-		let r = new FileReader();
-		r.onload = (e)=>{
-			resolve(e.target.result.split("/\r\n|\n/"));
-		};
-		r.onerror = (e)=>{
-			reject(e);
-		}
-		r.readAsText(f);
-	});
+// Adding mouse compatability...
+
+calc = (c, e)=>{
+	var r = c.getBoundingClientRect();
+	return {x: e.clientX - rect.left, y : e.clientY - rect.top};
 }
 
-f = new FileReader();
 current = new stage(__EMPTY_MAP, __MatObj);
 selected = "background";
 cursor = new vector(0, 0);
@@ -59,7 +51,7 @@ setInterval(()=>{ // Render current material
 
 document.onkeydown = e=>{ // Trap arrow keys (to stop scrolling)
 	e = e || window.event;
-	if(e.keyCode >= 37 && e.keyCode <= 40){
+	if((e.keyCode >= 37 && e.keyCode <= 40) || e.KeyCode == 32){
 		return false;
 	}
 };
@@ -78,9 +70,9 @@ document.addEventListener('keydown', e=>{
 		cursor.y++;
 		return;
 	}else if(e.code == "Space"){
-		console.log(cursor.x, cursor.y, selected);
 		current.set(cursor.x, cursor.y, selected);
-		return;
+		e.preventDefault();
+		return false;
 	}else if(e.code == "KeyE"){
 		document.getElementById("material").value = current.whatis(cursor.x, cursor.y);
 	}else if(e.code == "KeyQ"){
@@ -92,15 +84,17 @@ setInterval(()=>{
 	document.getElementById("sizedisplay").innerHTML = `(${document.getElementById("size").value})`
 });
 setTimeout(()=>{
+	document.getElementById("main").addEventListener("mousemove", console.log);
 	document.getElementById("download").onclick=()=>{
 		let r = e=>{if(e==','){return ',\n\t\t'}else{return e}}
-		let b = new Blob([`{\n\t"map" : ${JSON.stringify(current.map)},\n\t"mat" : ${JSON.stringify(current.materials).split('').map(r).join('')},\n\t"size":${document.getElementById("size").value}\n}`], {'type' : 'text/plain'});
+		current.sanitize();
+		let b = new Blob([`{\n\t"map" : ${JSON.stringify(current.map)},\n\t"mat" : ${JSON.stringify(current.materials).split('').map(r).join('')},\n\t"size":${document.getElementById("size").value},\n\t"name" : "${current.name}"\n}`], {'type' : 'text/plain'});
 		let l = document.createElement('a');
 		l.href = URL.createObjectURL(b);
 		l.download = "level.json";
 		l.click();
 		URL.revokeObjectURL(link.href);
-	}
+	};
 	document.getElementById("upload").onchange=()=>{
 		/*
 		f.readAsText(document.getElementById("upload").files[0]);
@@ -112,10 +106,11 @@ setTimeout(()=>{
 		*/
 		parseFile(document.getElementById("upload").files[0]).then(e=>{
 			let p = JSON.parse(e[0]);
-			current = new stage(p.map, p.mat);
+			current = new stage(p.map, p.mat, p.name);
 			document.getElementById("size").value = p.size;
+			document.getElementById("name").value = p.name;
 		});
-	}
+	};
 	document.getElementById("size").onchange=()=>{
 		let a = []
 		for(let x = 0; x < document.getElementById("size").value; x++){
@@ -125,5 +120,12 @@ setTimeout(()=>{
 			}
 		}
 		current = new stage(a, __MatObj);
+	};
+	document.getElementById("name").onchange=()=>{
+		current.name = document.getElementById("name").value;
+	};
+	document.getElementById("save.text").onclick=()=>{
+		let r = e=>{if(e==','){return ',\n\t\t'}else{return e}}
+		navigator.clipboard.writeText(`new stage(${JSON.stringify(current.map)},${JSON.stringify(current.materials).split('').map(r).join('')},"${document.getElementById("name").value}")`)
 	}
 }, 5)
