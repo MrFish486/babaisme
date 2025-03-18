@@ -49,7 +49,7 @@ setInterval(()=>{ // Set up render thread
 	document.getElementById("level.name").innerHTML = baba.stage.name;
 	document.getElementById("moves").innerHTML = `Moves made : ${__VERSIONS.length}`;
 	document.getElementById("stagenum").innerHTML = `Level : ${baba.stagenum} / ${baba.stages.length - 1}`;
-}, 100);
+}, 10);
 
 setInterval(()=>{ // Constantly switch to current stage
 	if(baba.stage != baba.stages[baba.stagenum]){

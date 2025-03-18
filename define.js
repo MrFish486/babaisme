@@ -1,5 +1,5 @@
 var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green"}; // DISCONTINUED!!
-var __MATERIALS = ["background", "baba", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup", "text:loop", "text:game", "text:sink", "text:water", "bababehindwater", "dave", "text:dave"];
+var __MATERIALS = ["background", "baba", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup", "text:loop", "text:game", "text:sink", "text:water", "dave", "text:dave"];
 var __MATERIAL_CACHE = {};
 
 parseFile = (f)=> {
@@ -129,10 +129,9 @@ class game{
 		for(let x = 0; x < this.stage.sizeframe.x; x++){
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(debug){console.log(`x=${x},y=${y},color=${this.colorprofile[this.stage.whatis(x, y)]},mat=${this.stage.whatis(x, y)}`)};
-				if(this.stage.whatis(x, y) == "baba" && this.player.under == "wall"){
-					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * yscale, x * xscale, yscale, xscale);
-				}else if(this.stage.whatis(x, y) == "baba" && this.player.under == "water"){
-					c.drawImage(__MATERIAL_CACHE["bababehindwater"], y * yscale, x * xscale, yscale, xscale);
+				if(this.player.pos.x == x && this.player.pos.y == y){
+					c.drawImage(__MATERIAL_CACHE[this.player.under], y * yscale, x * xscale, yscale, xscale);
+					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(this.player.pos.x, this.player.pos.y)], y * yscale, x * xscale, yscale, xscale);
 				}else{
 					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale, yscale, xscale);
 				}
