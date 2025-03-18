@@ -47,6 +47,8 @@ setInterval(()=>{ // Set up render thread
 	baba.checkwin();
 	baba.render(document.getElementById("main"));
 	document.getElementById("level.name").innerHTML = baba.stage.name;
+	document.getElementById("moves").innerHTML = `Moves made : ${__VERSIONS.length}`;
+	document.getElementById("stagenum").innerHTML = `Level : ${baba.stagenum} / ${baba.stages.length - 1}`;
 }, 100);
 
 setInterval(()=>{ // Constantly switch to current stage

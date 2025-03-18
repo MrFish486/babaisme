@@ -130,11 +130,11 @@ class game{
 			for(let y = 0; y < this.stage.sizeframe.y; y++){
 				if(debug){console.log(`x=${x},y=${y},color=${this.colorprofile[this.stage.whatis(x, y)]},mat=${this.stage.whatis(x, y)}`)};
 				if(this.stage.whatis(x, y) == "baba" && this.player.under == "wall"){
-					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * yscale, x * xscale, xscale, yscale);
+					c.drawImage(__MATERIAL_CACHE["bababehindwall"], y * yscale, x * xscale, yscale, xscale);
 				}else if(this.stage.whatis(x, y) == "baba" && this.player.under == "water"){
-					c.drawImage(__MATERIAL_CACHE["bababehindwater"], y * yscale, x * xscale, xscale, yscale);
+					c.drawImage(__MATERIAL_CACHE["bababehindwater"], y * yscale, x * xscale, yscale, xscale);
 				}else{
-					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale, xscale, yscale);
+					c.drawImage(__MATERIAL_CACHE[this.stage.whatis(x, y)], y * yscale, x * xscale, yscale, xscale);
 				}
 				/*
 					c.beginPath();
