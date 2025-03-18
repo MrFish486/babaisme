@@ -10,7 +10,11 @@ __MATERIALS.forEach((v, i)=>{
 
 calc = (c, e)=>{
 	var r = c.getBoundingClientRect();
-	return {x: e.clientX - rect.left, y : e.clientY - rect.top};
+	return {x: e.clientX - r.left, y : e.clientY - r.top};
+}
+
+getscale = ()=>{
+	return new vector(document.getElementById("main").width / current.sizeframe.x, document.getElementById("main").height / current.sizeframe.y);
 }
 
 current = new stage(__EMPTY_MAP, __MatObj);
@@ -41,7 +45,7 @@ setInterval(()=>{ // Set up render thread
 			}
 		}
 
-}, 100);
+}, 10);
 
 setInterval(()=>{ // Render current material
 	selected = document.getElementById("material").value;
@@ -84,7 +88,13 @@ setInterval(()=>{
 	document.getElementById("sizedisplay").innerHTML = `(${document.getElementById("size").value})`
 });
 setTimeout(()=>{
-	document.getElementById("main").addEventListener("mousemove", console.log);
+	document.getElementById("main").addEventListener("mousemove", e=>{
+		cursor.y = Math.floor(calc(document.getElementById("main"), e).x / getscale().x);
+		cursor.x = Math.floor(calc(document.getElementById("main"), e).y / getscale().y);
+	});
+	document.getElementById("main").addEventListener("click", e=>{
+		current.set(cursor.x, cursor.y, selected);
+	});
 	document.getElementById("download").onclick=()=>{
 		let r = e=>{if(e==','){return ',\n\t\t'}else{return e}}
 		current.sanitize();
