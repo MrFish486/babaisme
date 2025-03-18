@@ -148,7 +148,7 @@ class game{
 			for(let x = 0; x < this.stage.sizeframe.x; x++){
 				for(let y = 0; y < this.stage.sizeframe.y; y++){
 					c.beginPath();
-					c.rect(y * xscale, x * yscale, xscale, yscale);
+					c.rect(y * yscale, x * xscale, yscale, xscale);
 					c.strokeStyle = "red";
 					c.strokeWidth = 5;
 					c.stroke();
@@ -208,6 +208,10 @@ class game{
 			return;
 		}else if(event_.code == "ArrowUp" || event_.code == "ArrowDown" || event_.code == "ArrowLeft" || event_.code == "ArrowRight"){
 			__VERSIONS.push(JSON.parse(JSON.stringify({map : this.stage.map, under : this.player.under})));
+		}else if(event_.code == "KeyE"){
+			document.getElementById("next").click();
+		}else if(event_.code == "KeyQ"){
+			document.getElementById("prev").click();
 		}
 		baba.probe();
 		let youexists = false;
