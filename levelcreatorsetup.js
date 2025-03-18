@@ -1,6 +1,9 @@
 __LoadObjects() // It... Well... Loads the objects.
 
 __MatObj = {};
+
+__MouseDown = false;
+
 __MATERIALS.forEach((v, i)=>{
 	__MatObj[i] = v;
 	setTimeout(()=>{document.getElementById("material").innerHTML += `<option value=${v}>${v}</option>`},5);
@@ -91,9 +94,20 @@ setTimeout(()=>{
 	document.getElementById("main").addEventListener("mousemove", e=>{
 		cursor.y = Math.floor(calc(document.getElementById("main"), e).x / getscale().x);
 		cursor.x = Math.floor(calc(document.getElementById("main"), e).y / getscale().y);
+		if(__MouseDown){
+			current.set(cursor.x, cursor.y, selected);
+		}
 	});
-	document.getElementById("main").addEventListener("click", e=>{
-		current.set(cursor.x, cursor.y, selected);
+	document.getElementById("main").addEventListener("mousedown", e=>{
+		__MouseDown = true;
+	});
+	document.getElementById("main").addEventListener("mouseup", e=>{
+		__MouseDown = false;
+	});
+	document.getElementById("main").addEventListener("contextmenu", e=>{
+		document.getElementById("material").value = current.whatis(cursor.x, cursor.y);
+		e.preventDefault();	
+		return false;
 	});
 	document.getElementById("download").onclick=()=>{
 		let r = e=>{if(e==','){return ',\n\t\t'}else{return e}}

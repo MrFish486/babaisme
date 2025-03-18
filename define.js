@@ -1,5 +1,5 @@
 var __DEFAULT_COLOR_PROFILE = {"background" : "black", "text:baba" : "red", "text:is" : "white", "text:you" : "yellow", "water" : "blue", "wall" : "gray", "baba": "orange", "flag" : "lime", "text:stop" : "coral", "text:wall" : "brown", "text:win" : "aqua", "text:flag" : "yellowgreen", "unknown" : "green"}; // DISCONTINUED!!
-var __MATERIALS = ["background", "baba", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup", "text:loop", "text:game", "text:sink", "text:water", "bababehindwater"];
+var __MATERIALS = ["background", "baba", "flag", "lump", "text:baba", "text:flag", "text:is", "text:lump", "text:stop", "text:wall", "text:win", "text:you", "unknown", "wall", "water", "keke", "text:keke", "bababehindwall", "text:moveleft", "text:moveright", "pokey", "text:kill", "text:pokey", "text:push", "text:rock", "rock", "text:movedown", "text:moveup", "text:loop", "text:game", "text:sink", "text:water", "bababehindwater", "dave", "text:dave"];
 var __MATERIAL_CACHE = {};
 
 parseFile = (f)=> {
@@ -84,7 +84,7 @@ class game{
 		this.stage = stages[stagenum];
 		this.colorprofile = colorprofile;
 		this.definitions = {}; // Things such as {"baba":"you"}, list of things: "baba", "you", "flag", "wall", "text"
-		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump", "text:keke", "text:pokey", "text:rock", "text:game", "text:water"];
+		this.__assignable = ["text:baba", "text:wall", "text:flag", "text:text", "text:lump", "text:keke", "text:pokey", "text:rock", "text:game", "text:water", "text:dave"];
 		this.__assignto = ["text:you", "text:stop", "text:win", "text:moveleft", "text:moveright", "text:kill", "text:push", "text:movedown", "text:moveup", "text:loop", "text:sink"];
 		this.__assignable.forEach((v, i)=>{
 			this.definitions[v] = []
@@ -321,7 +321,7 @@ class stage{
 		this.map = map;
 		this.materials = materials;
 		this.solids = [] // Definable
-		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push", "baba", "keke", "text:game", "text:loop", "text:sink"] // Static (NOTE: keke and baba are in here so that they don't cause keydown violations on ticks)
+		this.pushable = ["text:baba", "text:is", "text:you", "text:flag", "text:water", "text:wall", "text:stop", "text:win", "text:lump", "text:keke", "text:moveleft", "text:moveright", "text:pokey", "text:kill", "text:rock", "text:push", "baba", "keke", "text:game", "text:loop", "text:sink", "text:dave"] // Static (NOTE: keke and baba are in here so that they don't cause keydown violations on ticks)
 		this.dynamicPushable = [];
 		this.solidsStatic = ["unknown"];
 		this.lastpush = undefined;
