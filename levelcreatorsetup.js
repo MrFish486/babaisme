@@ -100,6 +100,7 @@ setTimeout(()=>{
 	});
 	document.getElementById("main").addEventListener("mousedown", e=>{
 		__MouseDown = true;
+		current.set(cursor.x, cursor.y, selected);
 	});
 	document.getElementById("main").addEventListener("mouseup", e=>{
 		__MouseDown = false;

@@ -93,7 +93,6 @@ setTimeout(()=>{
 			baba.stagenum = -1;
 		});
 	}
-	document.getElementById("music").hidden = true;
 }, 5);
 
 setInterval(()=>{
@@ -103,6 +102,7 @@ setInterval(()=>{
 },1000) // Setup "game is loop" thread
 
 playmusic = ()=>{
-	document.getElementById("music").children[0] = ["./audio/music/baba.wav", "./audio.music/keke.wav"][Math.floor(Math.random())];
-	document.getElementById("music").play();
+	music = new Audio("./audio/music/baba2.wav");
+	music.loop = true;
+	music.play();
 }
